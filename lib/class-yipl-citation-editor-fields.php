@@ -30,7 +30,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             wp_enqueue_script(
                 'yipl-citation-script',
                 YIPL_CITATION_URL . 'assets/js/yipl-citation-editor.js', // Adjust path if needed
-                array('wp-rich-text', 'wp-editor', 'wp-element', 'wp-components'),
+                ['wp-rich-text', 'wp-editor', 'wp-element', 'wp-components', 'jquery'],
                 null,
                 true
             );
@@ -190,7 +190,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             wp_die();
         }
 
-         /**
+        /**
          * Save post 
          * https://developer.wordpress.org/reference/hooks/save_post/
          * 
