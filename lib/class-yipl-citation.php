@@ -17,10 +17,9 @@ if (! class_exists('YIPL_CITATION')) {
          */
         function __construct() {
             new YIPL_CITATION_POST_TYPE();
-            new YIPL_CITATION_POST_FIELDS();
             new YIPL_CITATION_DATA();
             new YIPL_CITATION_ADMIN_SETTINGS();
-            new YIPL_CITATION_EDITOR();
+            new YIPL_CITATION_EDITOR_FIELDS();
             add_action('wp', [$this, 'yipl_citation_wp_hook']);
             add_action('init', [$this, 'yipl_citation_register_scripts']);
         }

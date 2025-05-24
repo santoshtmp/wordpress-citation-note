@@ -88,7 +88,7 @@ if (! class_exists('YIPL_CITATION_POST_TYPE')) {
             foreach ($columns as $key => $value) {
                 if ($key == $before) {
                     $new_columns['description'] = __('Description');
-                    $new_columns['placeholder'] = __('Placeholder');
+                    $new_columns['placeholder_ids'] = __('Placeholder Ids');
                 }
                 $new_columns[$key] = $value;
             }
@@ -97,11 +97,10 @@ if (! class_exists('YIPL_CITATION_POST_TYPE')) {
 
         function manage_yipl_citation_column_data($column_name, $post_id) {
             if ('description' === $column_name) {
-                echo get_post_meta($post_id, '_description', true);
+                echo get_post_meta($post_id, '_yipl_citation_description', true);
             }
-            if ('placeholder' === $column_name) {
-                $slug = get_post_field('post_name', $post_id);
-                echo '<pre>' . $slug . '</pre>';
+            if ('placeholder_ids' === $column_name) {
+                echo 'yi_citation_post_' . $post_id;
             }
         }
 

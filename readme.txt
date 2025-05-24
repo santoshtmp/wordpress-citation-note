@@ -1,4 +1,4 @@
-=== YIPL Citation ===
+=== YIPL Citation Footnotes ===
 
 Contributors: santoshtmp7, younginnovations
 Tested up to:      6.8
@@ -7,10 +7,10 @@ License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Tags: YIPL, Citation
 
-This plugin make content citation and footernote..
+This plugin make content citation and footernotes.
 
 == Description ==
-YIPL Citation plugin purpose to make content citation and footernote.
+YIPL Citation plugin purpose to make content citation and footernotes.
 
 == Installation ==
 1. Upload the plugin files to the `/wp-content/plugins/yipl-citation` directory, or install the plugin through the WordPress plugins screen directly.

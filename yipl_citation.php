@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Plugin Name: YIPL Citation
+ * Plugin Name: YIPL Citation Footnotes
  * Plugin URI: 
- * Description: YIPL Citation plugin purpose to make content citation and footernote.
+ * Description: YIPL Citation plugin purpose to make content citation and footernotes.
  * Tags: YIPL, Citation
  * Contributors: santoshtmp7, younginnovations
  * Requires at least: 6.8

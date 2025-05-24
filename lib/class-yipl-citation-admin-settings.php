@@ -122,41 +122,6 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
                         ?>
                     </td>
                 </tr>
-                <tr>
-                    <th scope="row">
-                        <label for="yipl_citation_skip_tags">
-                            Select Citation Skip HTML Tags
-                        </label>
-                    </th>
-                    <td>
-                        <?php
-
-                        $skip_tags = YIPL_CITATION_DATA::get_skip_tags(true);
-                        $selected_skip_tags =  YIPL_CITATION_DATA::get_skip_tags();
-                        foreach ($skip_tags as $key => $value) {
-                        ?>
-                            <label for="skip-tags-<?php echo esc_attr($value); ?>">
-                                <input type="checkbox" name="yipl_citation_skip_tags[]" id="skip-tags-<?php echo esc_attr($value); ?>" value="<?php echo esc_attr($value); ?>" <?php checked(in_array($value, $selected_skip_tags)); ?>>
-                                <?php echo esc_attr($value); ?>
-                            </label>
-                        <?php
-                        }
-                        echo '<p class="description">Citation will not perform citation in selected tags. while "a" link is default tag</p>';
-                        ?>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">Default Auto Detect Citation Words. </th>
-                    <td>
-                        <label>
-                            <input type="checkbox" name="default_auto_detect_citation_word" value="1" <?php checked(get_option('default_auto_detect_citation_word'), 1); ?>>
-                            Enable
-                        </label>
-                        <?php
-                        echo '<p class="description">Apply in allowed post items.</p>';
-                        ?>
-                    </td>
-                </tr>
             </table>
 <?php
         }
