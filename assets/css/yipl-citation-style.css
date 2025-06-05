@@ -9,3 +9,8 @@
 yipl_citation_placeholder {
     display: none;
 }
+
+.yipl-citations-list .single-yipl-note-wrap {
+    display: flex;
+    flex-wrap: wrap;
+}

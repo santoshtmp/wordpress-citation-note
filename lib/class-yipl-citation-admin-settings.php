@@ -24,11 +24,19 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
             add_action('admin_menu', [$this, 'yipl_citation_settings_submenu']);
         }
 
+        /**
+         * Get the URL for the settings page
+         *
+         * @return string The URL for the settings page
+         */
+        public static function get_settings_page_url() {
+            return 'options-general.php?page=' . self::$admin_page_slug;
+        }
 
         // Hook into the plugin action links filter
         public function yipl_citation_settings_link($links) {
             // Create the settings link
-            $settings_link = '<a href="edit.php?post_type=' . YIPL_CITATION_POST_TYPE::$post_slug . '&page=' . self::$admin_page_slug . '">Settings</a>';
+            $settings_link = '<a href="' . self::get_settings_page_url() . '">Settings</a>';
             // Append the link to the existing links array
             array_unshift($links, $settings_link);
             return $links;
@@ -38,21 +46,18 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
          */
         function yipl_citaion_register_settings_fields() {
             register_setting('yipl_citation_settings_group', 'yipl_citation_allow_post_type');
-            register_setting('yipl_citation_settings_group', 'yipl_citation_skip_tags');
-            register_setting('yipl_citation_settings_group', 'default_allow_repeated_citation_word');
-            register_setting('yipl_citation_settings_group', 'default_auto_detect_citation_word');
+            register_setting('yipl_citation_settings_group', 'yipl_citation_footer_title');
         }
         /**
          * 
          */
         function yipl_citation_settings_submenu() {
-            add_submenu_page(
-                'edit.php?post_type=' . YIPL_CITATION_POST_TYPE::$post_slug,
-                'YIPL Citation General Settings',
-                'General Settings',
-                'manage_options',
-                self::$admin_page_slug,
-                [$this, 'render_yipl_citation_settings_page']
+            add_options_page(
+                'YIPL Citation General Settings Required ', // Page title.
+                'Citation Settings ', // Menu title.
+                'manage_options',     // Capability required to see the menu.
+                self::$admin_page_slug, // Menu slug.
+                [$this, 'render_yipl_citation_settings_page'] // Function to display the page content.
             );
         }
 
@@ -109,7 +114,6 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
                         $allow_post_type = (get_option('yipl_citation_allow_post_type', [])) ?: [];
                         $post_types = get_post_types(['public' => true], 'objects');
                         unset($post_types['attachment']);
-                        unset($post_types[YIPL_CITATION_POST_TYPE::$post_slug]);
                         foreach ($post_types as $key => $value) {
                         ?>
                             <label for="post-type-<?php echo esc_attr($key); ?>">
@@ -120,6 +124,16 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
                         }
                         echo '<p class="description">Citation will only be apply to selected post type.</p>';
                         ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">
+                        <label for="yipl_citation_footer_title">General Citation Footer Title</label>
+                    </th>
+                    <td>
+                        <?php $footer_title = get_option('yipl_citation_footer_title', ''); ?>
+                        <input type="text" name="yipl_citation_footer_title" id="yipl_citation_footer_title" value="<?php echo esc_attr($footer_title); ?>" class="regular-text" placeholder="References">
+                        <p class="description">This title will appear in the footer citation section.</p>
                     </td>
                 </tr>
             </table>

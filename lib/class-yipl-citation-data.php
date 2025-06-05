@@ -35,45 +35,6 @@ if (! class_exists('YIPL_CITATION_DATA')) {
             return self::$allow_post_type;
         }
 
-
-        /**
-         * get_yipl_citation_post
-         * get all publish data in ASC menu_order 
-         */
-        public static function get_yipl_citation_post($yipl_citation_ids = '') {
-            $yipl_citation = [];
-            $yipl_citation_arg = array(
-                'post_type' => YIPL_CITATION_POST_TYPE::$post_slug,
-                'posts_per_page' => -1,
-                'post_status' => array('publish'),
-                'orderby' => 'menu_order',
-                'order' => 'ASC'
-            );
-            if ($yipl_citation_ids) {
-                if (is_string($yipl_citation_ids) || is_int($yipl_citation_ids)) {
-                    $yipl_citation_ids = array_map('intval', explode(',', $yipl_citation_ids));
-                }
-                if (is_array($yipl_citation_ids)) {
-                    $yipl_citation_arg['post__in'] = $yipl_citation_ids;
-                } else {
-                    return '';
-                }
-            }
-            $yipl_citation_posts = get_posts($yipl_citation_arg);
-            foreach ($yipl_citation_posts  as $key => $value) {
-                $term = get_the_title($value->ID);
-                if ($term) {
-                    $yipl_citation[$value->ID] = [
-                        'id' => $value->ID,
-                        'slug' => $value->post_name,
-                        'term' => $term,
-                        'description' => get_post_meta($value->ID, '_yipl_citation_description', true),
-                    ];
-                }
-            }
-            return $yipl_citation;
-        }
-
         /**
          * Add citation tooltips or references to content dynamically.
          * https://developer.wordpress.org/reference/hooks/the_content/
@@ -90,7 +51,7 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 if (!in_array(get_post_type($post_id), self::$allow_post_type)) {
                     return $content;
                 }
-                $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
+                // $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
                 // Get global var and Initialize if not set
                 global $global_yipl_citation_words;
                 if (!is_array($global_yipl_citation_words)) {
@@ -101,24 +62,25 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
-                    function ($matches) use (&$global_yipl_citation_words, $yipl_citation_list) {
+                    function ($matches) use (&$global_yipl_citation_words) {
                         $yipl_citation_placeholder = trim($matches[1]);
-                        if (preg_match('/^yi_citation_post_(\d+)$/', $yipl_citation_placeholder, $matches)) {
-                            $yipl_citation_post_id = $matches[1];
-                            $yipl_citation_list = self::get_yipl_citation_post($yipl_citation_post_id);
-                            $yi_citation_content = $yipl_citation_list[$yipl_citation_post_id];
-                        } else if (preg_match('/^yi_citation_(\d+)$/', $yipl_citation_placeholder, $matches)) {
-                            $yipl_citation = $matches[1];
-                            $yi_citation_content = $yipl_citation_list[$yipl_citation];
+                        // if (preg_match('/^yi_citation_(\d+)$/', $yipl_citation_placeholder, $matches)) {
+                        //     $yipl_citation = $matches[1];
+                        //     $yi_citation_content = isset($yipl_citation_list[$yipl_citation]) ? $yipl_citation_list[$yipl_citation] : '';
+                        // } else {
+                        //     $yi_citation_content =  $yipl_citation_placeholder; // Fallback to the placeholder itself if no match found
+                        // }
+                        // if (!isset($global_yipl_citation_words[$yipl_citation_placeholder]) && !empty($yi_citation_content)) {
+                        //     $global_yipl_citation_words[$yipl_citation_placeholder] = $yi_citation_content;
+                        // }
+                        // $keys = array_keys($global_yipl_citation_words);
+                        // $count = array_search($yipl_citation_placeholder, $keys) + 1;
+                        if ($yipl_citation_placeholder) {
+                            $global_yipl_citation_words[] = $yipl_citation_placeholder;
+                            $replace_content = self::yipl_citaion_sup_number(count($global_yipl_citation_words)); // Add superscript for citation number
                         } else {
-                            $yi_citation_content =  '';
+                            $replace_content =  $yipl_citation_placeholder; 
                         }
-                        if (!isset($global_yipl_citation_words[$yipl_citation_placeholder])) {
-                            $global_yipl_citation_words[$yipl_citation_placeholder] = $yi_citation_content;
-                        }
-                        $keys = array_keys($global_yipl_citation_words);
-                        $count = array_search($yipl_citation_placeholder, $keys) + 1;
-                        $replace_content = self::yipl_citaion_sup_number($count); // Add superscript for citation number
 
                         return $replace_content;
                     },
@@ -135,8 +97,8 @@ if (! class_exists('YIPL_CITATION_DATA')) {
          * yipl_citaion_sup_num_content
          */
         public static function yipl_citaion_sup_number($number_count) {
-            return '<sup id="cite_ref-' . esc_attr($number_count) . '" class="reference" aria-label="Citation ' . esc_attr($number_count) . '">' .
-                '<a href="#yipl-citation-' . esc_attr($number_count) . '">' .
+            return '<sup id="yipl-citation-ref-' . esc_attr($number_count) . '" class="reference" aria-label="Citation ' . esc_attr($number_count) . '">' .
+                '<a href="#yipl-citation-note-' . esc_attr($number_count) . '">' .
                 '<span class="cite-bracket">[</span>' .
                 esc_html($number_count) .
                 '<span class="cite-bracket">]</span>' .
@@ -154,13 +116,24 @@ if (! class_exists('YIPL_CITATION_DATA')) {
             global $global_yipl_citation_words;
             $output = '';
             if (!empty($global_yipl_citation_words)) {
+                $footer_title = get_option('yipl_citation_footer_title', '');
                 wp_enqueue_style('yipl-citation-style');
                 $output .= '<div class="yipl-citations-wrapper container">';
+                if ($footer_title) {
+                    $output .= '<div class="yipl-citation-footer-title">' . $footer_title . '</div>';
+                }
                 $output .= '<ol class="yipl-citations-list">';
                 $id = 1;
                 foreach ($global_yipl_citation_words as $placeolder => $values) {
-                    $description = isset($values['description']) ? $values['description'] : '';
-                    $output .= '<li id="yipl-citation-' . esc_attr($id) . '"> <div class="yipl-citation-description">' . $description . '</div></li>';
+                    if (is_array($values)) {
+                        $description = isset($values['description']) ? $values['description'] : '';
+                    } elseif (is_string($values)) {
+                        $description = $values;
+                    } else {
+                        $description = '';
+                    }
+                    $description = trim($description);
+                    $output .= '<li id="yipl-citation-note-' . esc_attr($id) . '"><div class="single-yipl-note-wrap"><a href="#yipl-citation-ref-' . esc_attr($id) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></li>';
                     $id++;
                 }
                 $output .= '</ol>';

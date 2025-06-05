@@ -56,3 +56,12 @@ function yipl_citation_include_path_files($include_dir_paths) {
         }
     }
 }
+
+
+/**
+ * include lib files
+ */
+$include_paths = [
+    YIPL_CITATION_PATH . '/lib',
+];
+yipl_citation_include_path_files($include_paths);

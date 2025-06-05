@@ -1,79 +1,72 @@
-(function (wp) {
-    const { registerFormatType, toggleFormat } = wp.richText;
-    const { RichTextToolbarButton } = wp.blockEditor || wp.editor;
-    const { createElement } = wp.element;
-
-    registerFormatType('yipl/citation', {
-        title: 'YIPL Citation',
-        tagName: 'yipl_citation_placeholder',
-        className: null,
-        __experimentalShowInToolbar: true, // Force it into top toolbar
-        edit({ isActive, value, onChange }) {
-            return createElement(
-                RichTextToolbarButton,
-                {
-                    icon: 'editor-ul',
-                    title: 'YIPL Citation',
-                    onClick: () => {
-                        onChange(
-                            toggleFormat(value, {
-                                type: 'yipl/citation',
-                            })
-                        );
-                    },
-                    isActive: isActive,
-                }
-            );
-        },
-    });
-})(window.wp);
-
-
-
-
 /**
- * 
+ * https://developer.wordpress.org/block-editor/how-to-guides/format-api/
  */
+if (typeof ajax_object === 'undefined' || ajax_object.allow_citation) {
+    (
+        function (wp) {
+            const { registerFormatType, toggleFormat } = wp.richText;
+            const { BlockControls } = wp.blockEditor || wp.editor;
+            // const { RichTextToolbarButton } = wp.blockEditor || wp.editor;
+            const { ToolbarGroup, ToolbarButton } = wp.components;
+            const { createElement, Fragment } = wp.element;
 
-jQuery(document).ready(function ($) {
-    $('#add-repeater-group').on('click', function (e) {
-        e.preventDefault();
-        const $button = $(this);
-        $button.prop('disabled', true); // Prevent rapid multiple clicks
+            const YiplCitationButton = ({ isActive, onChange, value }) => {
+                // return createElement(
+                //     RichTextToolbarButton,
+                //     {
+                //         icon: 'editor-ul',
+                //         title: 'YIPL Citation',
+                //         onClick: () => {
+                //             onChange(toggleFormat(value, { type: 'yipl/citation', })
+                //             );
+                //         },
+                //         isActive: isActive,
+                //     }
+                // );
+                return createElement(
+                    Fragment,
+                    null,
+                    createElement(
+                        BlockControls,
+                        null,
+                        createElement(
+                            ToolbarGroup,
+                            null,
+                            createElement(ToolbarButton, {
+                                // icon: 'editor-ol',
+                                icon: wp.element.createElement(
+                                    'svg',
+                                    { width: 20, height: 20, viewBox: '0 0 24 24' },
+                                    wp.element.createElement('text', {
+                                        x: '2',
+                                        y: '16',
+                                        fontSize: '14',
+                                        fontFamily: 'Arial',
+                                    }, '123')
+                                ),
+                                label: 'YIPL Citation',
+                                title: 'YIPL Citation',
+                                onClick: () => {
+                                    onChange(
+                                        toggleFormat(value, {
+                                            type: 'yipl/citation',
+                                        })
+                                    );
+                                },
+                                isActive: isActive,
+                            })
+                        )
+                    )
+                );
+            };
 
-        let ajax = $.ajax({
-            url: ajax_object.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'update_citation_fields',
-                _nonce: ajax_object.nonce, // optional if nonce is used in PHP
-                custom_data: 'example'
-            }
-        });
-
-        ajax.done(function (response) {
-            let row = $(response);
-            $('#repeater-table tbody').append(row);
-
-            // Reinitialize TinyMCE if the row contains an editor
-            row.find('textarea').each(function () {
-                const editorId = $(this).attr('id');
-                if (editorId && typeof tinymce !== 'undefined') {
-                    tinymce.execCommand('mceAddEditor', false, editorId);
-                }
+            registerFormatType('yipl/citation', {
+                title: 'YIPL Citation',
+                tagName: 'yipl_citation_placeholder',
+                className: null,
+                edit: YiplCitationButton,
             });
-        });
-        ajax.fail(function (response) {
-            console.error('Error:', response.responseText);
-        });
-        ajax.always(function (response) {
-            // console.log(response);
-            $button.prop('disabled', false);
-        });
-    });
 
-    $(document).on('click', '.remove-group', function () {
-        $(this).closest('tr').remove();
-    });
-
-});
+        }
+    )(window.wp);
+}
