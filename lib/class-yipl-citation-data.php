@@ -51,7 +51,19 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 if (!in_array(get_post_type($post_id), self::$allow_post_type)) {
                     return $content;
                 }
-                // $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
+                $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
+                if(!is_array($yipl_citation_list) || empty($yipl_citation_list)) {
+                    return $content; // If no citations, return original content
+                }
+                // uasort($yipl_citation_list, function ($a, $b) {
+                //     return (int)$a['row_number'] <=> (int)$b['row_number'];
+                // });
+                $reindexedArray = [];
+                foreach ($yipl_citation_list as $item) {
+                    $reindexedArray[$item['row_number']] = $item;
+                }
+                $yipl_citation_list = $reindexedArray;
+
                 // Get global var and Initialize if not set
                 global $global_yipl_citation_words;
                 if (!is_array($global_yipl_citation_words)) {
@@ -62,27 +74,22 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
-                    function ($matches) use (&$global_yipl_citation_words) {
+                    function ($matches) use (&$global_yipl_citation_words, $yipl_citation_list) {
                         $yipl_citation_placeholder = trim($matches[1]);
-                        // if (preg_match('/^yi_citation_(\d+)$/', $yipl_citation_placeholder, $matches)) {
-                        //     $yipl_citation = $matches[1];
-                        //     $yi_citation_content = isset($yipl_citation_list[$yipl_citation]) ? $yipl_citation_list[$yipl_citation] : '';
-                        // } else {
-                        //     $yi_citation_content =  $yipl_citation_placeholder; // Fallback to the placeholder itself if no match found
-                        // }
-                        // if (!isset($global_yipl_citation_words[$yipl_citation_placeholder]) && !empty($yi_citation_content)) {
-                        //     $global_yipl_citation_words[$yipl_citation_placeholder] = $yi_citation_content;
-                        // }
-                        // $keys = array_keys($global_yipl_citation_words);
-                        // $count = array_search($yipl_citation_placeholder, $keys) + 1;
-                        if ($yipl_citation_placeholder) {
-                            $global_yipl_citation_words[] = $yipl_citation_placeholder;
-                            $replace_content = self::yipl_citaion_sup_number(count($global_yipl_citation_words)); // Add superscript for citation number
-                        } else {
-                            $replace_content =  $yipl_citation_placeholder; 
+                        if (!$yipl_citation_placeholder) {
+                            return ''; // If placeholder is empty, return empty string
                         }
-
-                        return $replace_content;
+                        if (preg_match('/^yi_citation_(\d+)$/', $yipl_citation_placeholder, $matches)) {
+                            $row_number = $matches[1];
+                            $yi_citation_content = isset($yipl_citation_list[$row_number]) ? $yipl_citation_list[$row_number] : '';
+                            if (!empty($yi_citation_content)) {
+                                if (!isset($global_yipl_citation_words[$row_number])) {
+                                    $global_yipl_citation_words[$row_number] = $yi_citation_content;
+                                }
+                                $replace_content = self::yipl_citaion_sup_number($row_number); // Add superscript for citation number
+                                return $replace_content;
+                            }
+                        }
                     },
                     $content
                 );
@@ -122,9 +129,8 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 if ($footer_title) {
                     $output .= '<div class="yipl-citation-footer-title">' . $footer_title . '</div>';
                 }
-                $output .= '<ol class="yipl-citations-list">';
-                $id = 1;
-                foreach ($global_yipl_citation_words as $placeolder => $values) {
+                $output .= '<div class="yipl-citations-list">';
+                foreach ($global_yipl_citation_words as $row_number => $values) {
                     if (is_array($values)) {
                         $description = isset($values['description']) ? $values['description'] : '';
                     } elseif (is_string($values)) {
@@ -133,10 +139,9 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                         $description = '';
                     }
                     $description = trim($description);
-                    $output .= '<li id="yipl-citation-note-' . esc_attr($id) . '"><div class="single-yipl-note-wrap"><a href="#yipl-citation-ref-' . esc_attr($id) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></li>';
-                    $id++;
+                    $output .= '<div id="yipl-citation-note-' . esc_attr($row_number) . '"><div class="single-yipl-note-wrap"><span class="row-number">' . $row_number . '.</span><a href="#yipl-citation-ref-' . esc_attr($row_number) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></div>';
                 }
-                $output .= '</ol>';
+                $output .= '</div>';
                 $output .= '</div>';
             }
             return $output;

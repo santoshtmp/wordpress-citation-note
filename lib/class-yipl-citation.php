@@ -16,7 +16,6 @@ if (! class_exists('YIPL_CITATION')) {
          * construction
          */
         function __construct() {
-            // new YIPL_CITATION_POST_TYPE();
             new YIPL_CITATION_DATA();
             new YIPL_CITATION_ADMIN_SETTINGS();
             new YIPL_CITATION_EDITOR_FIELDS();
@@ -25,8 +24,8 @@ if (! class_exists('YIPL_CITATION')) {
 
         function yipl_citation_register_scripts() {
             wp_register_style(
-                 "yipl-citation-style",
-                 YIPL_CITATION_URL . 'assets/css/yipl-citation-style.css',
+                "yipl-citation-style",
+                YIPL_CITATION_URL . 'assets/css/yipl-citation-style.css',
                 [],
                 null
             );
