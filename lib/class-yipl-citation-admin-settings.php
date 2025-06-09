@@ -136,6 +136,15 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
                         <p class="description">This title will appear in the footer citation section.</p>
                     </td>
                 </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <p class="description">
+                            The short code to display the citation footnotes in the footer section is '[yipl_citation_footnotes]':
+                            <pre>echo do_shortcode('[yipl_citation_footnotes]');</pre>
+                        </p>
+                    </td>
+                </tr>
             </table>
 <?php
         }

@@ -112,6 +112,18 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                     Add Citation Footnotes
                 </button>
             </p>
+            <p>
+                <label for="yipl_citation_published_citation_list">
+                    <?php
+                    $yipl_citation_published_list = get_post_meta($post->ID, 'yipl_citation_published_list', true);
+                    $yipl_citation_published_list = ($yipl_citation_published_list === '') ? '1' : $yipl_citation_published_list;
+                    ?>
+                    <input type="checkbox" name="yipl_citation_published_list" id="yipl_citation_published_citation_list" value="1" <?php checked($yipl_citation_published_list, '1'); ?>>
+                    Publish Citation List
+                </label>
+
+            </p>
+            <p> Use shortcode '[yipl_citation_footnotes]' to display the citation footnote. </p>
         <?php
         }
 
@@ -220,6 +232,9 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                 } else {
                     delete_post_meta($post_id, 'yipl_citation_list');
                 }
+
+                $published = isset($_POST['yipl_citation_published_list']) ? '1' : '0';
+                update_post_meta($post_id, 'yipl_citation_published_list', $published);
             }
         }
 

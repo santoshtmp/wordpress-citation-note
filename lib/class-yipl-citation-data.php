@@ -51,8 +51,11 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 if (!in_array(get_post_type($post_id), self::$allow_post_type)) {
                     return $content;
                 }
+                // Get the citation meta info from post meta
                 $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
-                if(!is_array($yipl_citation_list) || empty($yipl_citation_list)) {
+                $yipl_citation_published_list = (int)get_post_meta($post_id, 'yipl_citation_published_list', true);
+
+                if (!is_array($yipl_citation_list) || empty($yipl_citation_list)) {
                     return $content; // If no citations, return original content
                 }
                 // uasort($yipl_citation_list, function ($a, $b) {
@@ -60,6 +63,20 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 // });
                 $reindexedArray = [];
                 foreach ($yipl_citation_list as $item) {
+                    if (!isset($item['row_number']) || !is_numeric($item['row_number'])) {
+                        continue; // Skip items without a valid row number
+                    }
+                    $item['row_number'] = (int)$item['row_number']; // Ensure row_number is an integer
+                    if ($item['row_number'] <= 0) {
+                        continue; // Skip items with row_number less than or equal to 0
+                    }
+                    // Reindex the array using row_number as the key
+                    if (isset($reindexedArray[$item['row_number']])) {
+                        // If a duplicate row_number exists, you can handle it as needed
+                        // For example, you might want to skip it or log a warning
+                        continue; // Skip duplicates
+                    }
+                    // Ensure row_number is a valid integer and reindex
                     $reindexedArray[$item['row_number']] = $item;
                 }
                 $yipl_citation_list = $reindexedArray;
@@ -74,7 +91,10 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
-                    function ($matches) use (&$global_yipl_citation_words, $yipl_citation_list) {
+                    function ($matches) use (&$global_yipl_citation_words, $yipl_citation_list, $yipl_citation_published_list) {
+                        if(!$yipl_citation_published_list){
+                         return ''; // If citations are not published, return empty string   
+                        }
                         $yipl_citation_placeholder = trim($matches[1]);
                         if (!$yipl_citation_placeholder) {
                             return ''; // If placeholder is empty, return empty string
@@ -143,6 +163,7 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 }
                 $output .= '</div>';
                 $output .= '</div>';
+                $global_yipl_citation_words = []; // Clear the global variable after use
             }
             return $output;
         }
