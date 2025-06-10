@@ -34,13 +34,13 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             if (in_array(get_post_type(), YIPL_CITATION_DATA::$allow_post_type)) {
                 $allow_citation = true;
                 wp_enqueue_script(
-                    'yipl-citation-script',
+                    'yipl-citation-editor-script',
                     YIPL_CITATION_URL . 'assets/js/yipl-citation-editor.js',
-                    ['wp-rich-text', 'wp-editor', 'wp-block-editor', 'wp-element', 'wp-components', 'jquery'],
+                    ['wp-rich-text', 'wp-editor', 'wp-block-editor', 'wp-element', 'wp-components', 'jquery', 'jquery-ui-sortable'],
                     filemtime(YIPL_CITATION_PATH . 'assets/js/yipl-citation-editor.js'),
                     true
                 );
-                wp_localize_script('yipl-citation-script', 'ajax_object', [
+                wp_localize_script('yipl-citation-editor-script', 'ajax_object', [
                     'ajax_url' => admin_url('admin-ajax.php'),
                     'action_yipl_citation_fields' => 'update_citation_fields',
                     'nonce'    => wp_create_nonce('citation_fields_row'),
@@ -87,6 +87,15 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             $fields_data = get_post_meta($post->ID, 'yipl_citation_list', true);
             wp_nonce_field('save_yipl_citation_list', 'yipl_citation_list_nonce');
 ?>
+            <div class="yipl-citation--info">
+                <?php
+                if (is_array($fields_data) && $fields_data) { ?>
+                    <p style="float: right; margin-right: 1rem;">
+                        <button type="button" class="button" id="yipl-collapse-all">Collapse All</button>
+                        <button type="button" class="button" id="yipl-expand-all">Expand All</button>
+                    </p>
+                <?php } ?>
+            </div>
             <table id="yipl-citation-repeater-table" class="widefat striped" style="table-layout: auto;">
                 <thead>
                     <tr>
@@ -97,7 +106,11 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                 </thead>
                 <tbody>
                     <?php
-                    if (!empty($fields_data)) {
+                    if (is_array($fields_data)) {
+
+                        uasort($fields_data, function ($a, $b) {
+                            return $a['row_number'] <=> $b['row_number'];
+                        });
                         foreach ($fields_data as $field) {
                             echo $this->get_field_row($field);
                         }
@@ -123,7 +136,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                 </label>
 
             </p>
-            <p> Use shortcode '[yipl_citation_footnotes]' to display the citation footnote. </p>
+            <p> Use shortcode '[yipl_citation_footnotes]' to display the citation footnotes. </p>
         <?php
         }
 
@@ -155,33 +168,56 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
         ?>
             <tr class="repeater-group" data-index="<?php echo $index; ?>">
 
-                <td style="max-width: 6rem;">
-                    <p>
-                        <input type="number" name="<?php echo $pre_name; ?>[row_number]" value="<?php echo $row_number; ?>" data-index="<?php echo $index; ?>">
-                    </p>
-                    <p class="yi_citation_<?php echo $index; ?>"><?php echo 'yi_citation_' . $row_number; ?></p>
+                <td class="yipl-citation-row-number-field" style="max-width: 6rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="row-drag-handler" title="Drag to reorder" style="cursor: move; margin-right: 0.5rem;">
+                            <i class="fas fa-arrows-alt"></i>
+                        </span>
+
+                        <div class="info-row-number">
+                            <p class="citation-expandable">
+                                <input type="text" inputmode="numeric" pattern="^[0-9]$" name="<?php echo $pre_name; ?>[row_number]" value="<?php echo $row_number; ?>" data-index="<?php echo $index; ?>" class="input-row_number" style=" max-width: 100%;">
+                            </p>
+                            <p class="yi_citation_<?php echo $index; ?> " style="margin: auto;">
+                                <?php echo 'citation_' . $row_number; ?>
+                            </p>
+
+                        </div>
+                    </div>
                     <div style="display: none;">
                         <input type="hidden" name="<?php echo $pre_name; ?>[index]" value="<?php echo $index; ?>">
                     </div>
                 </td>
-                <td>
-                    <?php
-                    $editor_id = 'yipl_citation_list_' . $index . '_description';
-                    wp_editor(
-                        isset($field['description']) ? $field['description'] : '',
-                        $editor_id,
-                        [
-                            'textarea_name' => $pre_name . "[description]",
-                            'textarea_rows' => 3,
-                            'media_buttons' => false,
-                            'teeny' => false,
-                            'quicktags' => true,
-                        ]
-                    );
-                    ?>
+                <td class="yipl-citation-description-field">
+                    <div class="citation-expandable">
+                        <?php
+                        $editor_id = 'yipl_citation_list_' . $index . '_description';
+                        wp_editor(
+                            isset($field['description']) ? $field['description'] : '',
+                            $editor_id,
+                            [
+                                'textarea_name' => $pre_name . "[description]",
+                                'textarea_rows' => 3,
+                                'media_buttons' => false,
+                                'teeny' => false,
+                                'quicktags' => true,
+                            ]
+                        );
+                        ?>
+                    </div>
+                    <div class="citation-collapseable" style="display: none; margin: auto;">
+                        <p style="max-width: 500px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block;">
+                            <?php
+                            echo isset($field['description']) && trim($field['description']) !== ''
+                                ? esc_html(wp_strip_all_tags($field['description']))
+                                : '<em>.....</em>'; ?>
+                        </p>
+
+                    </div>
                 </td>
-                <td>
+                <td class="yipl-citation-action-field" style="max-width: 6rem;">
                     <button type="button" class="button yipl-citation-remove-group">Remove</button>
+                    <button type="button" class="toggle-yi-citation-row button small">Collapse</button>
                 </td>
             </tr>
 <?php

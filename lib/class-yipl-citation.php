@@ -29,6 +29,13 @@ if (! class_exists('YIPL_CITATION')) {
                 [],
                 null
             );
+            wp_enqueue_script(
+                'yipl-citation-script',
+                YIPL_CITATION_URL . 'assets/js/yipl-citation.js',
+                ['jquery'],
+                filemtime(YIPL_CITATION_PATH . 'assets/js/yipl-citation.js'),
+                true
+            );
         }
         //  ======== END =======
     }

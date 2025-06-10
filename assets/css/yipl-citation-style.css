@@ -1,16 +1,43 @@
-.yipl-citations-wrapper {
-    max-width: 700px;
-}
-
-.yipl-citation-term {
-    display: none;
-}
+/* yipl - citation footnotes */
 
 yipl_citation_placeholder {
-    display: none;
+  display: none;
+}
+
+.yipl-citations-wrapper {
+  max-width: 700px;
 }
 
 .yipl-citations-list .single-yipl-note-wrap {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: .25rem;
+  font-size: .875rem;
+  line-height: 1.5rem;
+}
+
+.yipl-citation-popup {
+  position: absolute;
+  max-width: 320px;
+  background: white;
+  color: #000;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  border-radius: 8px;
+  z-index: 10000;
+  font-size: 0.875rem;
+  display: none;
+  transition: opacity 0.2s ease;
+  overflow-wrap: break-word;
+}
+
+.yipl-citation-popup.show {
+  display: block;
+  opacity: 1;
+}
+
+.yipl-citation-popup.hide {
+  opacity: 0;
+  pointer-events: none;
 }

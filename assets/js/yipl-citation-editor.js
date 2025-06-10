@@ -33,18 +33,8 @@ if (typeof ajax_object === 'undefined' || ajax_object.allow_citation) {
                             ToolbarGroup,
                             null,
                             createElement(ToolbarButton, {
-                                // icon: 'editor-ol',
-                                icon: wp.element.createElement(
-                                    'svg',
-                                    { width: 20, height: 20, viewBox: '0 0 24 24' },
-                                    wp.element.createElement('text', {
-                                        x: '2',
-                                        y: '16',
-                                        fontSize: '14',
-                                        fontFamily: 'Arial',
-                                    }, '123')
-                                ),
-                                label: 'YIPL Citation',
+                                icon: 'format-quote',//'editor-ol' 'format-quote'
+                                label: 'Citation',
                                 title: 'YIPL Citation',
                                 onClick: () => {
                                     onChange(
@@ -77,6 +67,8 @@ if (typeof ajax_object === 'undefined' || ajax_object.allow_citation) {
  * 
  */
 jQuery(document).ready(function ($) {
+    // Initialize TinyMCE for existing textareas
+    // add new fields when clicking the add button
     $('#yipl-citation-add-repeater-group').on('click', function (e) {
         e.preventDefault();
         const $button = $(this);
@@ -117,20 +109,32 @@ jQuery(document).ready(function ($) {
     // This will remove the group from the table
     $(document).on('click', '.yipl-citation-remove-group', function () {
         $(this).prop('disabled', true);
-        $(this).closest('tr').remove();
+        if (confirm('Are you sure you want to remove this citation?')) {
+            $(this).closest('tr').remove();
+        }
         $(this).prop('disabled', false);
     });
 
+    /** 
+     * Validate number input to allow only digits
+     * This will allow only digits in the input field
+     * and remove any non-digit characters
+    */
+    $(document).on("input", '.input-row_number', function () {
+        let value = $(this).val().replace(/\D/g, '');
+        $(this).val(value);
+    });
 
-    //
-    $(document).on('blur', '#yipl-citation-repeater-table input[type="number"]', function () {
+    // Validate number input for duplicates
+    // generate a unique placeholder for each input
+    $(document).on('blur', '#yipl-citation-repeater-table .input-row_number', function () {
         var $input = $(this);
         var index = $input.data('index');
         var value = $input.val();
 
         // Check for duplicates
         var isDuplicate = false;
-        $('input[type="number"]').not($input).each(function () {
+        $('.input-row_number').not($input).each(function () {
             if ($(this).val().trim() === value) {
                 isDuplicate = true;
                 return false; // break loop
@@ -140,13 +144,78 @@ jQuery(document).ready(function ($) {
         if (isDuplicate) {
             $input.val('');
             $input.css('border', '2px solid red');
-            $('.yi_citation_' + index).text('Duplicate!   ' + 'yi_citation_' + value);
+            $('.yi_citation_' + index).text('Duplicate!   ' + 'citation_' + value);
         } else {
             $input.css('border', '');
-            $('.yi_citation_' + index).text('yi_citation_' + value);
+            $('.yi_citation_' + index).text('citation_' + value);
         }
         // 
     });
 
+    // Toggle collapse/expand
+    $('#yipl-citation-repeater-table').on('click', '.toggle-yi-citation-row', function () {
+        const $tr = $(this).closest('tr');
+        // Toggle the expand/collapse of the row
+        $tr.find('.citation-expandable').toggle();
+        $tr.find('.citation-collapseable').toggle();
+
+        // Optionally, change the button text when toggled (e.g., "Show" / "Hide")
+        const buttonText = $tr.find('.citation-expandable').is(':visible') ? 'Collapse' : 'Expand';
+        $(this).text(buttonText);
+    });
+
+    // Collapse all rows
+    $('#yipl-collapse-all').click(function () {
+        $('#yipl-citation-repeater-table tbody tr .citation-expandable').each(function () {
+            $(this).hide();  // Hide all expandable content
+        });
+        $('#yipl-citation-repeater-table tbody tr .citation-collapseable').each(function () {
+            $(this).show();  // Hide all expandable content
+        });
+        $('#yipl-citation-repeater-table tbody tr .toggle-yi-citation-row').each(function () {
+            $(this).text('Expand');
+        });
+    });
+
+    // Expand all rows
+    $('#yipl-expand-all').click(function () {
+        $('#yipl-citation-repeater-table tbody tr .citation-expandable').each(function () {
+            $(this).show();  // Show all expandable content
+        });
+        $('#yipl-citation-repeater-table tbody tr .citation-collapseable').each(function () {
+            $(this).hide();  // Hide all expandable content
+        });
+        $('#yipl-citation-repeater-table tbody tr .toggle-yi-citation-row').each(function () {
+            $(this).text('Collapse');
+        });
+    });
+
+
+    // Re-arrange rows
+    $('#yipl-citation-repeater-table tbody').sortable({
+        handle: '.row-drag-handler',
+        axis: 'y',
+        // update: function (event, ui) {
+        // },
+        stop: function (event, ui) {
+            try {
+                // Try reinitializing TinyMCE for any textarea in the moved row
+                ui.item.find('textarea').each(function () {
+                    let editorId = $(this).attr('id');
+                    // if (editorId && typeof tinymce !== 'undefined') {
+                    // Remove existing editor (if any)
+                    tinymce.execCommand('mceRemoveEditor', false, editorId);
+                    // Re-add TinyMCE
+                    tinymce.execCommand('mceAddEditor', false, editorId);
+                    // }
+                });
+                // Remove inline width styles added during sort
+                ui.item.find('td').css('width', '');
+            } catch (error) {
+                // Revert sort by canceling the move
+                $tbody.sortable('cancel');
+            }
+        }
+    });
 
 });

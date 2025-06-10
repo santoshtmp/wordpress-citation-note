@@ -92,14 +92,16 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                 $content = preg_replace_callback(
                     $pattern,
                     function ($matches) use (&$global_yipl_citation_words, $yipl_citation_list, $yipl_citation_published_list) {
-                        if(!$yipl_citation_published_list){
-                         return ''; // If citations are not published, return empty string   
+                        if (!$yipl_citation_published_list) {
+                            return ''; // If citations are not published, return empty string   
                         }
                         $yipl_citation_placeholder = trim($matches[1]);
                         if (!$yipl_citation_placeholder) {
                             return ''; // If placeholder is empty, return empty string
                         }
-                        if (preg_match('/^yi_citation_(\d+)$/', $yipl_citation_placeholder, $matches)) {
+                        // $match_pattern = '/^\[citation_(\d+)\]$/';
+                        $match_pattern = '/^citation_(\d+)$/';
+                        if (preg_match($match_pattern, $yipl_citation_placeholder, $matches)) {
                             $row_number = $matches[1];
                             $yi_citation_content = isset($yipl_citation_list[$row_number]) ? $yipl_citation_list[$row_number] : '';
                             if (!empty($yi_citation_content)) {
@@ -150,6 +152,7 @@ if (! class_exists('YIPL_CITATION_DATA')) {
                     $output .= '<div class="yipl-citation-footer-title">' . $footer_title . '</div>';
                 }
                 $output .= '<div class="yipl-citations-list">';
+                ksort($global_yipl_citation_words); // Sort by row number
                 foreach ($global_yipl_citation_words as $row_number => $values) {
                     if (is_array($values)) {
                         $description = isset($values['description']) ? $values['description'] : '';

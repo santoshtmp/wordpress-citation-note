@@ -4,11 +4,12 @@
  * Plugin Name: YIPL Citation Footnotes
  * Plugin URI: 
  * Description: YIPL Citation plugin purpose to make content citation and footernotes.
- * Tags: YIPL, Citation
+ * Tags: YIPL, Citation, Footnotes, Citation Plugin
  * Contributors: santoshtmp7, younginnovations
  * Requires at least: 6.8
- * Requires PHP: 7.4
- * Version: 1.0.1
+ * Requires PHP: 8.0
+ * Tested up to: 6.8
+ * Version: 1.0.0
  * Author: YIPL-santoshtmp7
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
