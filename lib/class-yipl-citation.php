@@ -27,7 +27,8 @@ if (! class_exists('YIPL_CITATION')) {
                 "yipl-citation-style",
                 YIPL_CITATION_URL . 'assets/css/yipl-citation-style.css',
                 [],
-                null
+                filemtime(YIPL_CITATION_PATH . 'assets/css/yipl-citation-style.css')
+
             );
             wp_enqueue_script(
                 'yipl-citation-script',

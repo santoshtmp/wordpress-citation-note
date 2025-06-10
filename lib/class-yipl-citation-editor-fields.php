@@ -50,7 +50,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                     'yipl-citation-editor-style',
                     YIPL_CITATION_URL . 'assets/css/yipl-citation-editor.css',
                     array('wp-edit-blocks'),
-                    null
+                    filemtime(YIPL_CITATION_PATH . 'assets/css/yipl-citation-editor.css')
                 );
             }
         }
@@ -73,7 +73,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
 
             add_meta_box(
                 'post_yipl_citation_content',
-                esc_html__('Citation Footnotes'),
+                esc_html__('Citation Footnotes', 'yipl-citation'),
                 [$this, 'add_yipl_citation_meta_box'],
                 YIPL_CITATION_DATA::$allow_post_type,
                 'normal',
@@ -146,10 +146,11 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
         function ajax_update_citation_fields() {
 
             // Verify _nonce
-            if (!isset($_POST['_nonce']) || !wp_verify_nonce($_POST['_nonce'], 'citation_fields_row')) {
+            if (!isset($_POST['_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_nonce'])), 'citation_fields_row')) {
                 echo "Session timeout";
                 wp_die();
             }
+
 
             // Use timestamp
             echo $this->get_field_row([]);
@@ -163,10 +164,10 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             $index = (isset($field['index'])) ? $field['index'] : time();
             $index = ($index) ? $index : time();
             $row_number = (isset($field['row_number'])) ? $field['row_number'] : '';
-            $pre_name = "yipl_citation_list[" . $index . "]";
+            $pre_name = "yipl_citation_list[" . esc_attr($index) . "]";
             ob_start();
         ?>
-            <tr class="repeater-group" data-index="<?php echo $index; ?>">
+            <tr class="repeater-group" data-index="<?php echo esc_attr($index); ?>">
 
                 <td class="yipl-citation-row-number-field" style="max-width: 6rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -176,16 +177,16 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
 
                         <div class="info-row-number">
                             <p class="citation-expandable">
-                                <input type="text" inputmode="numeric" pattern="^[0-9]$" name="<?php echo $pre_name; ?>[row_number]" value="<?php echo $row_number; ?>" data-index="<?php echo $index; ?>" class="input-row_number" style=" max-width: 100%;">
+                                <input type="text" inputmode="numeric" pattern="^[0-9]$" name="<?php echo esc_attr($pre_name); ?>[row_number]" value="<?php echo esc_attr($row_number); ?>" data-index="<?php echo esc_attr($index); ?>" class="input-row_number" style=" max-width: 100%;">
                             </p>
-                            <p class="yi_citation_<?php echo $index; ?> " style="margin: auto;">
-                                <?php echo 'citation_' . $row_number; ?>
+                            <p class="yi_citation_<?php echo esc_attr($index); ?> " style="margin: auto;">
+                                <?php echo 'citation_' . esc_html($row_number); ?>
                             </p>
 
                         </div>
                     </div>
                     <div style="display: none;">
-                        <input type="hidden" name="<?php echo $pre_name; ?>[index]" value="<?php echo $index; ?>">
+                        <input type="hidden" name="<?php echo esc_attr($pre_name); ?>[index]" value="<?php echo esc_attr($index); ?>">
                     </div>
                 </td>
                 <td class="yipl-citation-description-field">
@@ -238,32 +239,26 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
                 return;
             }
-
-            // yipl_citation_description_field
-            if (
-                isset($_POST['description_meta_nonce']) &&
-                wp_verify_nonce($_POST['description_meta_nonce'], 'save_yipl_citation_descriptino')
-            ) {
-                if (isset($_POST['yipl_citation_description_field'])) {
-                    // update_post_meta($post_id, '_description', sanitize_textarea_field($_POST['yipl_citation_description_field']));
-                    update_post_meta($post_id, '_yipl_citation_description', wp_kses_post($_POST['yipl_citation_description_field']));
-                }
-            }
-
-            if (isset($_POST['yipl_citation_list_nonce']) && wp_verify_nonce($_POST['yipl_citation_list_nonce'], 'save_yipl_citation_list')) {
-
+            // 
+            if (isset($_POST['yipl_citation_list_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['yipl_citation_list_nonce'])), 'save_yipl_citation_list')) {
                 if (isset($_POST['yipl_citation_list']) && is_array($_POST['yipl_citation_list'])) {
+                    $raw_data = wp_unslash($_POST['yipl_citation_list']);
                     $cleaned = array_map(
                         function ($field) {
+                            // Skip if the description is empty
+                            if (empty($field['description']) || trim($field['description']) === '') {
+                                return null; // Return null to skip this entry
+                            }
+                            // 
                             return [
                                 'index' => isset($field['index']) ? intval(preg_replace('/\D/', '', $field['index'])) : 0,
-                                'row_number' => isset($field['row_number']) ? sanitize_text_field($field['row_number']) : '',
+                                'row_number' => isset($field['row_number']) ? intval($field['row_number']) : 0,
                                 'description' => isset($field['description']) ? wp_kses_post($field['description']) : '',
                             ];
                         },
-                        $_POST['yipl_citation_list']
+                        $raw_data
                     );
-
+                    $cleaned = array_filter($cleaned);  // Remove nulls
                     update_post_meta($post_id, 'yipl_citation_list', $cleaned);
                 } else {
                     delete_post_meta($post_id, 'yipl_citation_list');

@@ -45,8 +45,26 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
          * 
          */
         function yipl_citaion_register_settings_fields() {
-            register_setting('yipl_citation_settings_group', 'yipl_citation_allow_post_type');
-            register_setting('yipl_citation_settings_group', 'yipl_citation_footer_title');
+            register_setting(
+                'yipl_citation_settings_group',
+                'yipl_citation_allow_post_type',
+                [
+                    'type' => 'array',
+                    'sanitize_callback' => function ($input) {
+                        return array_map('sanitize_text_field', (array) $input);
+                    },
+                    'default' => []
+                ]
+            );
+            register_setting(
+                'yipl_citation_settings_group',
+                'yipl_citation_footer_title',
+                [
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'default' => ''
+                ]
+            );
         }
         /**
          * 
@@ -141,7 +159,7 @@ if (! class_exists('YIPL_CITATION_ADMIN_SETTINGS')) {
                     <td>
                         <p class="description">
                             The short code to display the citation footnotes in the footer section is '[yipl_citation_footnotes]':
-                            <pre>echo do_shortcode('[yipl_citation_footnotes]');</pre>
+                        <pre>echo do_shortcode('[yipl_citation_footnotes]');</pre>
                         </p>
                     </td>
                 </tr>
