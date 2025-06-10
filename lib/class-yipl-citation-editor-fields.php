@@ -112,7 +112,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                             return $a['row_number'] <=> $b['row_number'];
                         });
                         foreach ($fields_data as $field) {
-                            echo $this->get_field_row($field);
+                            $this->get_field_row($field);
                         }
                     }
                     ?>
@@ -151,9 +151,8 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                 wp_die();
             }
 
-
             // Use timestamp
-            echo $this->get_field_row([]);
+            $this->get_field_row([]);
 
             // Always die in functions echoing AJAX content
             wp_die();
@@ -165,7 +164,6 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             $index = ($index) ? $index : time();
             $row_number = (isset($field['row_number'])) ? $field['row_number'] : '';
             $pre_name = "yipl_citation_list[" . esc_attr($index) . "]";
-            ob_start();
         ?>
             <tr class="repeater-group" data-index="<?php echo esc_attr($index); ?>">
 
@@ -222,9 +220,6 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                 </td>
             </tr>
 <?php
-            $content = ob_get_contents(); //ob_get_clean()
-            ob_end_clean();
-            return $content;
         }
 
 
@@ -242,7 +237,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
             // 
             if (isset($_POST['yipl_citation_list_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['yipl_citation_list_nonce'])), 'save_yipl_citation_list')) {
                 if (isset($_POST['yipl_citation_list']) && is_array($_POST['yipl_citation_list'])) {
-                    $raw_data = wp_unslash($_POST['yipl_citation_list']);
+                    $yipl_citation_list = wp_unslash($_POST['yipl_citation_list']);
                     $cleaned = array_map(
                         function ($field) {
                             // Skip if the description is empty
@@ -256,7 +251,7 @@ if (! class_exists('YIPL_CITATION_EDITOR_FIELDS')) {
                                 'description' => isset($field['description']) ? wp_kses_post($field['description']) : '',
                             ];
                         },
-                        $raw_data
+                        $yipl_citation_list
                     );
                     $cleaned = array_filter($cleaned);  // Remove nulls
                     update_post_meta($post_id, 'yipl_citation_list', $cleaned);

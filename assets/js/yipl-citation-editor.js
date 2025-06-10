@@ -105,6 +105,17 @@ jQuery(document).ready(function ($) {
         });
     });
 
+    // Initialize TinyMCE for existing textareas
+    // This will initialize TinyMCE for all textareas in the table
+    $('#yipl-citation-repeater-table tbody tr').each(function () {
+        $(this).find('textarea').each(function () {
+            const editorId = $(this).attr('id');
+            if (editorId && typeof tinymce !== 'undefined') {
+                tinymce.execCommand('mceAddEditor', false, editorId);
+            }
+        });
+    });
+
     // Remove group button
     // This will remove the group from the table
     $(document).on('click', '.yipl-citation-remove-group', function () {
