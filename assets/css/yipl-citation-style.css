@@ -16,6 +16,18 @@ yipl_citation_placeholder {
   line-height: 1.5rem;
 }
 
+.single-yipl-note-wrap a.yiplcifo-uplink,
+sup.yiplcifo-reference a {
+  color: inherit;
+  text-decoration: inherit;
+  transition: all .4s ease;
+}
+
+.yipl-citation-description {
+  word-break: break-all;
+}
+
+
 .yipl-citation-popup {
   position: absolute;
   max-width: 360px;

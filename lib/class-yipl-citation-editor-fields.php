@@ -39,7 +39,10 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                     YIPLCIFO_PLUGIN_URL . 'assets/js/yipl-citation-editor.js',
                     ['wp-rich-text', 'wp-editor', 'wp-block-editor', 'wp-element', 'wp-components', 'jquery', 'jquery-ui-sortable'],
                     filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/js/yipl-citation-editor.js'),
-                    true
+                    array(
+                        'in_footer' => true,
+                        'strategy' => 'defer',
+                    )
                 );
                 wp_localize_script('yipl-citation-editor-script', 'yiplcifoAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
@@ -51,7 +54,8 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                     'yipl-citation-editor-style',
                     YIPLCIFO_PLUGIN_URL . 'assets/css/yipl-citation-editor.css',
                     array('wp-edit-blocks'),
-                    filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/css/yipl-citation-editor.css')
+                    filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/css/yipl-citation-editor.css'),
+                    'all'
                 );
             }
         }
@@ -71,14 +75,15 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
          * https://developer.wordpress.org/reference/hooks/add_meta_boxes/
          */
         public function yiplcifo_add_meta_boxes() {
-
-            add_meta_box(
-                'post_yipl_citation_content',
-                esc_html__('Citation Footnotes', 'yipl-citation'),
-                [$this, 'yiplcifo_add_yipl_citation_meta_box'],
-                YIPLCIFO_Data::$yiplcifo_allow_post_type,
-                'normal',
-            );
+            if (YIPLCIFO_Data::$yiplcifo_allow_post_type) {
+                add_meta_box(
+                    'post_yipl_citation_content',
+                    esc_html__('Citation Footnotes', 'yipl-citation'),
+                    [$this, 'yiplcifo_add_yipl_citation_meta_box'],
+                    YIPLCIFO_Data::$yiplcifo_allow_post_type,
+                    'normal',
+                );
+            }
         }
 
         /**
@@ -124,17 +129,6 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                 <button type="button" class="button button-primary" id="yipl-citation-add-repeater-group">
                     Add Citation Footnotes
                 </button>
-            </p>
-            <p>
-                <label for="yipl_citation_published_citation_list">
-                    <?php
-                    $yipl_citation_published_list = get_post_meta($post->ID, 'yipl_citation_published_list', true);
-                    $yipl_citation_published_list = ($yipl_citation_published_list === '') ? '1' : $yipl_citation_published_list;
-                    ?>
-                    <input type="checkbox" name="yipl_citation_published_list" id="yipl_citation_published_citation_list" value="1" <?php checked($yipl_citation_published_list, '1'); ?>>
-                    Publish Citation List
-                </label>
-
             </p>
             <p> Use shortcode '[yipl_citation_footnotes]' to display the citation footnotes. </p>
         <?php
@@ -258,9 +252,6 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                 } else {
                     delete_post_meta($post_id, 'yipl_citation_list');
                 }
-
-                $published = isset($_POST['yipl_citation_published_list']) ? '1' : '0';
-                update_post_meta($post_id, 'yipl_citation_published_list', $published);
             }
         }
 
