@@ -1,7 +1,7 @@
 /**
  * https://developer.wordpress.org/block-editor/how-to-guides/format-api/
  */
-if (typeof ajax_object === "undefined" || ajax_object.allow_citation) {
+if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
   (function (wp) {
     const { registerFormatType, toggleFormat } = wp.richText;
     const { BlockControls } = wp.blockEditor || wp.editor;
@@ -70,11 +70,11 @@ jQuery(document).ready(function ($) {
     $button.prop("disabled", true); // Prevent rapid multiple clicks
 
     let ajax = $.ajax({
-      url: ajax_object.ajax_url,
+      url: yiplcifoAjax.ajax_url,
       type: "POST",
       data: {
-        action: ajax_object.action_yipl_citation_fields,
-        _nonce: ajax_object.nonce,
+        action: yiplcifoAjax.action_yipl_citation_fields,
+        _nonce: yiplcifoAjax.nonce,
         row_number: $("#yipl-citation-repeater-table tbody tr").length + 1,
       },
     });
