@@ -22,11 +22,10 @@ if (!defined('ABSPATH')) {
 }
 
 // define yipl_citation constant named
-define('YIPL_CITATION_PATH', plugin_dir_path(__FILE__));
-define('YIPL_CITATION_URL', plugin_dir_url(__FILE__));
-define('YIPL_CITATION_BASENAME', plugin_basename(__FILE__));
+define('YIPLCIFO_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('YIPLCIFO_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('YIPLCIFO_PLUGIN_BASENAME', plugin_basename(__FILE__));
+
 
 // include utility functions file
 require_once dirname(__FILE__) . '/includes/yipl-citation-utility.php';
-
-
