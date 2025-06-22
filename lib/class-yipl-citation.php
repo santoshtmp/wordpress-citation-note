@@ -1,5 +1,7 @@
 <?php
 
+namespace yiplcifo;
+
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
     exit;
@@ -16,25 +18,25 @@ if (! class_exists('YIPL_CITATION')) {
          * construction
          */
         function __construct() {
-            new YIPL_CITATION_DATA();
-            new YIPL_CITATION_ADMIN_SETTINGS();
-            new YIPL_CITATION_EDITOR_FIELDS();
+            new YIPLCIFO_Data();
+            new YIPLCIFO_Admin_Settings();
+            new YIPLCIFO_Editor_Fields();
             add_action('init', [$this, 'yipl_citation_register_scripts']);
         }
 
         function yipl_citation_register_scripts() {
             wp_register_style(
                 "yipl-citation-style",
-                YIPL_CITATION_URL . 'assets/css/yipl-citation-style.css',
+                YIPLCIFO_PLUGIN_URL . 'assets/css/yipl-citation-style.css',
                 [],
-                filemtime(YIPL_CITATION_PATH . 'assets/css/yipl-citation-style.css')
+                filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/css/yipl-citation-style.css')
 
             );
             wp_enqueue_script(
                 'yipl-citation-script',
-                YIPL_CITATION_URL . 'assets/js/yipl-citation.js',
+                YIPLCIFO_PLUGIN_URL . 'assets/js/yipl-citation.js',
                 ['jquery'],
-                filemtime(YIPL_CITATION_PATH . 'assets/js/yipl-citation.js'),
+                filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/js/yipl-citation.js'),
                 true
             );
         }

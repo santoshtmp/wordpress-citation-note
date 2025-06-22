@@ -6,15 +6,15 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * yipl_citation_get_path
+ * yiplcifo_get_path
  *
  * Returns the plugin path to a specified file.
  *
  * @param   string $filename The specified file.
  * @return  string
  */
-function yipl_citation_get_path($filename = '') {
-    return YIPL_CITATION_PATH . ltrim($filename, '/');
+function yiplcifo_get_path($filename = '') {
+    return YIPLCIFO_PLUGIN_DIR . ltrim($filename, '/');
 }
 
 /**
@@ -23,8 +23,8 @@ function yipl_citation_get_path($filename = '') {
  * @param   string $filename The specified file.
  * @return  void
  */
-function yipl_citation_include($filename = '') {
-    $file_path = yipl_citation_get_path($filename);
+function yiplcifo_include($filename = '') {
+    $file_path = yiplcifo_get_path($filename);
     if (file_exists($file_path)) {
         include_once $file_path;
     }
@@ -35,7 +35,7 @@ function yipl_citation_include($filename = '') {
  * requires all ".php" files from dir defined in "include_dir_paths" at first level.
  * @param array $include_dir_paths will be [__DIR__.'/inc'];
  */
-function yipl_citation_include_path_files($include_dir_paths) {
+function yiplcifo_include_path_files($include_dir_paths) {
     foreach ($include_dir_paths as $key => $file_path) {
         if (!file_exists($file_path)) {
             continue;
@@ -62,6 +62,6 @@ function yipl_citation_include_path_files($include_dir_paths) {
  * include lib files
  */
 $include_paths = [
-    YIPL_CITATION_PATH . '/lib',
+    YIPLCIFO_PLUGIN_DIR . '/lib',
 ];
-yipl_citation_include_path_files($include_paths);
+yiplcifo_include_path_files($include_paths);
