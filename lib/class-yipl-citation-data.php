@@ -55,7 +55,6 @@ if (!class_exists('YIPLCIFO_Data')) {
                 }
                 // Get the citation meta info from post meta
                 $yipl_citation_list = get_post_meta($post_id, 'yipl_citation_list', true);
-                $yipl_citation_published_list = (int) get_post_meta($post_id, 'yipl_citation_published_list', true);
 
                 if (!is_array($yipl_citation_list) || empty($yipl_citation_list)) {
                     return $content; // If no citations, return original content
@@ -93,10 +92,8 @@ if (!class_exists('YIPLCIFO_Data')) {
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
-                    function ($matches) use (&$yiplcifo_post_citaion_list, $yipl_citation_list, $yipl_citation_published_list, $post_id) {
-                        if (!$yipl_citation_published_list) {
-                            return ''; // If citations are not published, return empty string   
-                        }
+                    function ($matches) use (&$yiplcifo_post_citaion_list, $yipl_citation_list, $post_id) {
+                        // 
                         $yipl_citation_placeholder = trim($matches[1]);
                         if (!$yipl_citation_placeholder) {
                             return ''; // If placeholder is empty, return empty string
@@ -129,7 +126,7 @@ if (!class_exists('YIPLCIFO_Data')) {
          * yipl_citaion_sup_num_content
          */
         public static function yiplcifo_sup_number($post_id, $number_count) {
-            return '<sup id="yipl-citation-ref-' . esc_attr($post_id . '-' . $number_count) . '" class="reference reference-number" aria-label="Citation ' . esc_attr($post_id . '-' . $number_count) . '">' .
+            return '<sup id="yipl-citation-ref-' . esc_attr($post_id . '-' . $number_count) . '" class="yiplcifo-reference reference-number" aria-label="Citation ' . esc_attr($post_id . '-' . $number_count) . '">' .
                 '<a href="#yipl-citation-note-' . esc_attr($post_id . '-' . $number_count) . '">' .
                 '<span class="cite-bracket">[</span>' .
                 esc_html($number_count) .
