@@ -41,7 +41,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                     filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/js/yipl-citation-editor.js'),
                     true
                 );
-                wp_localize_script('yipl-citation-editor-script', 'ajax_object', [
+                wp_localize_script('yipl-citation-editor-script', 'yiplcifoAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
                     'action_yipl_citation_fields' => 'update_citation_fields',
                     'nonce'    => wp_create_nonce('citation_fields_row'),
