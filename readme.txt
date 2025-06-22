@@ -9,7 +9,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin add and manage citation fields for WordPress posts using a user-friendly editor interface.
+This plugin add and manage citation fields for WordPress page/posts and CPT using a user-friendly editor interface.
 
 == Description ==
 
@@ -39,10 +39,10 @@ Ideal for blogs, research publications, or any content that benefits from struct
 
 
 == Screenshots ==
-1. Settings screen to configure post types and footnote title.
-2. Meta box interface for entering citation data.
-3. Citation placeholders inserted in post content.
-4. Frontend rendering of citation list.
+1. Plugin settings screen.
+2. Citation meta box for entering data.
+3. Citation placeholders and shortcode in content.
+4. Frontend rendering of citation.
 
 == Frequently Asked Questions ==
 = Can we apply to particular post type? =
