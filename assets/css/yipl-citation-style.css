@@ -8,12 +8,22 @@ yipl_citation_placeholder {
   max-width: 842px;
 }
 
-.yipl-citations-list .single-yipl-note-wrap {
+.yipl-citations-wrapper .yipl-citations-list .single-yipl-note-wrap {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.25rem;
   font-size: 0.875rem;
   line-height: 1.5rem;
+}
+
+.yipl-citations-wrapper .yipl-citation-description {
+  word-break: break-all;
+}
+
+.yipl-citations-wrapper .yipl-citation-description p {
+  word-break: break-all;
+  padding: 0;
+  margin: 0;
 }
 
 .single-yipl-note-wrap a.yiplcifo-uplink,
@@ -22,11 +32,6 @@ sup.yiplcifo-reference a {
   text-decoration: inherit;
   transition: all .4s ease;
 }
-
-.yipl-citation-description {
-  word-break: break-all;
-}
-
 
 .yipl-citation-popup {
   position: absolute;
