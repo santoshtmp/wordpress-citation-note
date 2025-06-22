@@ -93,7 +93,7 @@ if (!class_exists('YIPLCIFO_Data')) {
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
-                    function ($matches) use (&$yiplcifo_post_citaion_list, $yipl_citation_list, $yipl_citation_published_list) {
+                    function ($matches) use (&$yiplcifo_post_citaion_list, $yipl_citation_list, $yipl_citation_published_list, $post_id) {
                         if (!$yipl_citation_published_list) {
                             return ''; // If citations are not published, return empty string   
                         }
@@ -108,9 +108,10 @@ if (!class_exists('YIPLCIFO_Data')) {
                             $yi_citation_content = isset($yipl_citation_list[$row_number]) ? $yipl_citation_list[$row_number] : '';
                             if (!empty($yi_citation_content)) {
                                 if (!isset($yiplcifo_post_citaion_list[$row_number])) {
+                                    $yi_citation_content['post_id'] = $post_id;
                                     $yiplcifo_post_citaion_list[$row_number] = $yi_citation_content;
                                 }
-                                $replace_content = self::yiplcifo_sup_number($row_number); // Add superscript for citation number
+                                $replace_content = self::yiplcifo_sup_number($post_id, $row_number); // Add superscript for citation number
                                 return $replace_content;
                             }
                         }
@@ -127,9 +128,9 @@ if (!class_exists('YIPLCIFO_Data')) {
         /**
          * yipl_citaion_sup_num_content
          */
-        public static function yiplcifo_sup_number($number_count) {
-            return '<sup id="yipl-citation-ref-' . esc_attr($number_count) . '" class="reference reference-number" aria-label="Citation ' . esc_attr($number_count) . '">' .
-                '<a href="#yipl-citation-note-' . esc_attr($number_count) . '">' .
+        public static function yiplcifo_sup_number($post_id, $number_count) {
+            return '<sup id="yipl-citation-ref-' . esc_attr($post_id . '-' . $number_count) . '" class="reference reference-number" aria-label="Citation ' . esc_attr($post_id . '-' . $number_count) . '">' .
+                '<a href="#yipl-citation-note-' . esc_attr($post_id . '-' . $number_count) . '">' .
                 '<span class="cite-bracket">[</span>' .
                 esc_html($number_count) .
                 '<span class="cite-bracket">]</span>' .
@@ -155,16 +156,20 @@ if (!class_exists('YIPLCIFO_Data')) {
                 }
                 $output .= '<div class="yipl-citations-list">';
                 ksort($yiplcifo_post_citaion_list); // Sort by row number
-                foreach ($yiplcifo_post_citaion_list as $row_number => $values) {
+                foreach ($yiplcifo_post_citaion_list as $key => $values) {
+                    $row_number = $key;
+                    $post_id = get_the_ID();
                     if (is_array($values)) {
                         $description = isset($values['description']) ? $values['description'] : '';
+                        $row_number = isset($values['row_number']) ? $values['row_number'] : $row_number;
+                        $post_id = isset($values['post_id']) ? $values['post_id'] : $post_id;
                     } elseif (is_string($values)) {
                         $description = $values;
                     } else {
                         $description = '';
                     }
                     $description = trim($description);
-                    $output .= '<div id="yipl-citation-note-' . esc_attr($row_number) . '"><div class="single-yipl-note-wrap"><span class="row-number">' . $row_number . '.</span><a href="#yipl-citation-ref-' . esc_attr($row_number) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></div>';
+                    $output .= '<div id="yipl-citation-note-' . esc_attr($post_id . '-' . $row_number) . '"><div class="single-yipl-note-wrap"><span class="row-number">' . $row_number . '.</span><a class="yiplcifo-uplink" href="#yipl-citation-ref-' . esc_attr($post_id . '-' . $row_number) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></div>';
                 }
                 $output .= '</div>';
                 $output .= '</div>';

@@ -20,11 +20,6 @@ YIPL Citation plugin purpose to make content citation and footernotes.
 = Can we apply to particular post type? =
 Yes, we can apply to only selected post type.
 
-== Screenshots ==
-1. Backend settings
-2. Quick Edit option
-3. Maximum character limit 
-
 == Release ==
 1. Initial release 1.0.0
 
