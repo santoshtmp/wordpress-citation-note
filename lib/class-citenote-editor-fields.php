@@ -78,7 +78,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
             if (CITENOTE_Data::$citenote_allow_post_type) {
                 add_meta_box(
                     'post_citenote_content',
-                    esc_html__('Citation Footnotes', 'citation-note'),
+                    esc_html__('Citation List', 'citation-note'),
                     [$this, 'citenote_add_citenote_meta_box'],
                     CITENOTE_Data::$citenote_allow_post_type,
                     'normal',
