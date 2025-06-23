@@ -17,9 +17,15 @@ node_modules
 .idea/
 
 # Ignore OSX files
+*~
 ._.DS_Store
 .DS_Store
 .unison*
+.svn
+.cvs
+*.bak
+*.swp
+Thumbs.db
 
 # Nodejs log files
 wp-content/themes/logs

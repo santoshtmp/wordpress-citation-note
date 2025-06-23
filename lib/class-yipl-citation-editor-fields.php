@@ -231,7 +231,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
             // 
             if (isset($_POST['yipl_citation_list_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['yipl_citation_list_nonce'])), 'save_yipl_citation_list')) {
                 if (isset($_POST['yipl_citation_list']) && is_array($_POST['yipl_citation_list'])) {
-                    $yipl_citation_list = wp_unslash($_POST['yipl_citation_list']);
+                    $raw_citation_list = (array)wp_unslash($_POST['yipl_citation_list']);
                     $cleaned = array_map(
                         function ($field) {
                             // Skip if the description is empty
@@ -245,7 +245,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                                 'description' => isset($field['description']) ? wp_kses_post($field['description']) : '',
                             ];
                         },
-                        $yipl_citation_list
+                        $raw_citation_list
                     );
                     $cleaned = array_filter($cleaned);  // Remove nulls
                     update_post_meta($post_id, 'yipl_citation_list', $cleaned);
