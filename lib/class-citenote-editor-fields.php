@@ -1,18 +1,18 @@
 <?php
 
-namespace yiplcitation;
+namespace citenote;
 
 // Exit if accessed directly.
 if (! defined('ABSPATH')) {
     exit;
 }
 
-if (! class_exists('YIPLCIFO_Editor_Fields')) {
+if (! class_exists('CITENOTE_Editor_Fields')) {
 
     /**
-     * YIPLCIFO_Editor_Fields
+     * CITENOTE_Editor_Fields
      */
-    class YIPLCIFO_Editor_Fields {
+    class CITENOTE_Editor_Fields {
 
 
         /**
@@ -20,41 +20,41 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
          */
         function __construct() {
             // 
-            add_action('enqueue_block_editor_assets', [$this, 'yiplcifo_enqueue_block_editor_assets']);
-            add_filter('wp_kses_allowed_html', [$this, 'yiplcifo_wp_kses_allowed_html'], 10, 2);
-            add_action('add_meta_boxes', [$this, 'yiplcifo_add_meta_boxes']);
-            add_action('wp_ajax_updateCitationEditField', [$this, 'yiplcifo_updateCitationEditField']);
-            add_action('save_post', [$this, 'yiplcifo_save_post']);
+            add_action('enqueue_block_editor_assets', [$this, 'citenote_enqueue_block_editor_assets']);
+            add_filter('wp_kses_allowed_html', [$this, 'citenote_wp_kses_allowed_html'], 10, 2);
+            add_action('add_meta_boxes', [$this, 'citenote_add_meta_boxes']);
+            add_action('wp_ajax_updateCitationEditField', [$this, 'citenote_updateCitationEditField']);
+            add_action('save_post', [$this, 'citenote_save_post']);
         }
 
         /**
          * 
          */
-        public function yiplcifo_enqueue_block_editor_assets() {
+        public function citenote_enqueue_block_editor_assets() {
             $allow_citation = false;
-            if (in_array(get_post_type(), YIPLCIFO_Data::$yiplcifo_allow_post_type)) {
+            if (in_array(get_post_type(), CITENOTE_Data::$citenote_allow_post_type)) {
                 $allow_citation = true;
                 wp_enqueue_script(
-                    'yipl-citation-editor-script',
-                    YIPLCIFO_PLUGIN_URL . 'assets/js/yipl-citation-editor.js',
+                    'citation-note-editor-script',
+                    CITENOTE_PLUGIN_URL . 'assets/js/citation-note-editor.js',
                     ['wp-rich-text', 'wp-editor', 'wp-block-editor', 'wp-element', 'wp-components', 'jquery', 'jquery-ui-sortable'],
-                    filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/js/yipl-citation-editor.js'),
+                    filemtime(CITENOTE_PLUGIN_DIR . 'assets/js/citation-note-editor.js'),
                     array(
                         'in_footer' => true,
                         'strategy' => 'defer',
                     )
                 );
-                wp_localize_script('yipl-citation-editor-script', 'yiplcifoAjax', [
+                wp_localize_script('citation-note-editor-script', 'citenoteAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
                     'action_name' => 'updateCitationEditField',
                     'nonce'    => wp_create_nonce('citation_fields_row'),
                     'allow_citation' => $allow_citation,
                 ]);
                 wp_enqueue_style(
-                    'yipl-citation-editor-style',
-                    YIPLCIFO_PLUGIN_URL . 'assets/css/yipl-citation-editor.css',
+                    'citation-note-editor-style',
+                    CITENOTE_PLUGIN_URL . 'assets/css/citation-note-editor.css',
                     array('wp-edit-blocks'),
-                    filemtime(YIPLCIFO_PLUGIN_DIR . 'assets/css/yipl-citation-editor.css'),
+                    filemtime(CITENOTE_PLUGIN_DIR . 'assets/css/citation-note-editor.css'),
                     'all'
                 );
             }
@@ -63,9 +63,9 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
         /**
          * 
          */
-        public function yiplcifo_wp_kses_allowed_html($allowed, $context) {
+        public function citenote_wp_kses_allowed_html($allowed, $context) {
             if (is_array($allowed)) {
-                $allowed['yipl_citation_placeholder'] = array(); // No attributes allowed
+                $allowed['citenote_placeholder'] = array(); // No attributes allowed
             }
             return $allowed;
         }
@@ -74,34 +74,34 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
          * Add Custom meata box in the post type
          * https://developer.wordpress.org/reference/hooks/add_meta_boxes/
          */
-        public function yiplcifo_add_meta_boxes() {
-            if (YIPLCIFO_Data::$yiplcifo_allow_post_type) {
+        public function citenote_add_meta_boxes() {
+            if (CITENOTE_Data::$citenote_allow_post_type) {
                 add_meta_box(
-                    'post_yipl_citation_content',
-                    esc_html__('Citation Footnotes', 'yipl-citation'),
-                    [$this, 'yiplcifo_add_yipl_citation_meta_box'],
-                    YIPLCIFO_Data::$yiplcifo_allow_post_type,
+                    'post_citenote_content',
+                    esc_html__('Citation Footnotes', 'citation-note'),
+                    [$this, 'citenote_add_citenote_meta_box'],
+                    CITENOTE_Data::$citenote_allow_post_type,
                     'normal',
                 );
             }
         }
 
         /**
-         * add_yipl_citation_meta_box
+         * add_citenote_meta_box
          */
-        function yiplcifo_add_yipl_citation_meta_box($post) {
-            $fields_data = get_post_meta($post->ID, 'yipl_citation_list', true);
-            wp_nonce_field('save_yipl_citation_list', 'yipl_citation_list_nonce'); ?>
-            <div class="yipl-citation--info">
+        function citenote_add_citenote_meta_box($post) {
+            $fields_data = get_post_meta($post->ID, 'citenote_list', true);
+            wp_nonce_field('save_citenote_list', 'citenote_list_nonce'); ?>
+            <div class="citation-note--info">
                 <?php
                 if (is_array($fields_data) && $fields_data) { ?>
                     <p style="float: right; margin-right: 1rem;">
-                        <button type="button" class="button" id="yipl-collapse-all">Collapse All</button>
-                        <button type="button" class="button" id="yipl-expand-all">Expand All</button>
+                        <button type="button" class="button" id="citenote-collapse-all">Collapse All</button>
+                        <button type="button" class="button" id="citenote-expand-all">Expand All</button>
                     </p>
                 <?php } ?>
             </div>
-            <table id="yipl-citation-repeater-table" class="widefat striped" style="table-layout: auto;">
+            <table id="citation-note-repeater-table" class="widefat striped" style="table-layout: auto;">
                 <thead>
                     <tr>
                         <th>SN</th>
@@ -117,7 +117,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                             return $a['row_number'] <=> $b['row_number'];
                         });
                         foreach ($fields_data as $field) {
-                            $this->yiplcifo_get_field_row($field);
+                            $this->citenote_get_field_row($field);
                         }
                     }
                     ?>
@@ -126,18 +126,18 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
             <p>Place this id in the above content and mark as citation.</p>
 
             <p>
-                <button type="button" class="button button-primary" id="yipl-citation-add-repeater-group">
+                <button type="button" class="button button-primary" id="citation-note-add-repeater-group">
                     Add Citation Footnotes
                 </button>
             </p>
-            <p> Use shortcode '[yipl_citation_footnotes]' to display the citation footnotes. </p>
+            <p> Use shortcode '[citenote_display_list]' to display the citation footnotes. </p>
         <?php
         }
 
         /**
          * Example ajax 
          */
-        function yiplcifo_updateCitationEditField() {
+        function citenote_updateCitationEditField() {
 
             // Verify _nonce
             if (!isset($_POST['_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_nonce'])), 'citation_fields_row')) {
@@ -146,22 +146,22 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
             }
 
             // Use timestamp
-            $this->yiplcifo_get_field_row([]);
+            $this->citenote_get_field_row([]);
 
             // Always die in functions echoing AJAX content
             wp_die();
         }
 
         //
-        public function yiplcifo_get_field_row($field) {
+        public function citenote_get_field_row($field) {
             $index = (isset($field['index'])) ? $field['index'] : time();
             $index = ($index) ? $index : time();
             $row_number = (isset($field['row_number'])) ? $field['row_number'] : '';
-            $pre_name = "yipl_citation_list[" . esc_attr($index) . "]";
+            $pre_name = "citenote_list[" . esc_attr($index) . "]";
         ?>
             <tr class="repeater-group" data-index="<?php echo esc_attr($index); ?>">
 
-                <td class="yipl-citation-row-number-field" style="max-width: 6rem;">
+                <td class="citation-note-row-number-field" style="max-width: 6rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="row-drag-handler" title="Drag to reorder" style="cursor: move; margin-right: 0.5rem;">
                             <i class="fas fa-arrows-alt"></i>
@@ -181,10 +181,10 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                         <input type="hidden" name="<?php echo esc_attr($pre_name); ?>[index]" value="<?php echo esc_attr($index); ?>">
                     </div>
                 </td>
-                <td class="yipl-citation-description-field">
+                <td class="citation-note-description-field">
                     <div class="citation-expandable">
                         <?php
-                        $editor_id = 'yipl_citation_list_' . $index . '_description';
+                        $editor_id = 'citenote_list_' . $index . '_description';
                         wp_editor(
                             isset($field['description']) ? $field['description'] : '',
                             $editor_id,
@@ -208,8 +208,8 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
 
                     </div>
                 </td>
-                <td class="yipl-citation-action-field" style="max-width: 6rem;">
-                    <button type="button" class="button yipl-citation-remove-group">Remove</button>
+                <td class="citation-note-action-field" style="max-width: 6rem;">
+                    <button type="button" class="button citation-note-remove-group">Remove</button>
                     <button type="button" class="toggle-yi-citation-row button small">Collapse</button>
                 </td>
             </tr>
@@ -222,16 +222,16 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
          * https://developer.wordpress.org/reference/hooks/save_post/
          * 
          */
-        public function yiplcifo_save_post($post_id) {
+        public function citenote_save_post($post_id) {
 
             // Skip autosaves, revisions, and deletions
             if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
                 return;
             }
             // 
-            if (isset($_POST['yipl_citation_list_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['yipl_citation_list_nonce'])), 'save_yipl_citation_list')) {
-                if (isset($_POST['yipl_citation_list']) && is_array($_POST['yipl_citation_list'])) {
-                    $raw_citation_list = (array)wp_unslash($_POST['yipl_citation_list']);
+            if (isset($_POST['citenote_list_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['citenote_list_nonce'])), 'save_citenote_list')) {
+                if (isset($_POST['citenote_list']) && is_array($_POST['citenote_list'])) {
+                    $raw_citation_list = (array)wp_unslash($_POST['citenote_list']);
                     $cleaned = array_map(
                         function ($field) {
                             // Skip if the description is empty
@@ -248,9 +248,9 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                         $raw_citation_list
                     );
                     $cleaned = array_filter($cleaned);  // Remove nulls
-                    update_post_meta($post_id, 'yipl_citation_list', $cleaned);
+                    update_post_meta($post_id, 'citenote_list', $cleaned);
                 } else {
-                    delete_post_meta($post_id, 'yipl_citation_list');
+                    delete_post_meta($post_id, 'citenote_list');
                 }
             }
         }
