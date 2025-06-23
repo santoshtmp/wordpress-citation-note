@@ -1,9 +1,9 @@
 === YIPL Citation Footnotes ===
 
 Contributors: santoshtmp7, younginnovations
-Tags: YIPL, yiplcifo, citation, reference, academic, editor, custom fields
-Requires at least: 5.0
-Requires PHP: 7.4
+Tags: YIPL, Citation, Footnotes, Citation Plugin, reference, academic, editor, custom fields
+Requires at least: 6.8
+Requires PHP: 8.0
 Tested up to: 6.8
 Stable tag: 1.0.0
 License: GPLv2 or later
