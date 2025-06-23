@@ -1,6 +1,6 @@
 <?php
 
-namespace yiplcifo;
+namespace yiplcitation;
 
 // Exit if accessed directly.
 if (! defined('ABSPATH')) {

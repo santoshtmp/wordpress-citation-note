@@ -73,7 +73,7 @@ jQuery(document).ready(function ($) {
       url: yiplcifoAjax.ajax_url,
       type: "POST",
       data: {
-        action: yiplcifoAjax.action_yipl_citation_fields,
+        action: yiplcifoAjax.action_name,
         _nonce: yiplcifoAjax.nonce,
         row_number: $("#yipl-citation-repeater-table tbody tr").length + 1,
       },

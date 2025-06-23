@@ -1,6 +1,6 @@
 <?php
 
-namespace yiplcifo;
+namespace yiplcitation;
 
 // Exit if accessed directly.
 if (! defined('ABSPATH')) {
@@ -23,7 +23,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
             add_action('enqueue_block_editor_assets', [$this, 'yiplcifo_enqueue_block_editor_assets']);
             add_filter('wp_kses_allowed_html', [$this, 'yiplcifo_wp_kses_allowed_html'], 10, 2);
             add_action('add_meta_boxes', [$this, 'yiplcifo_add_meta_boxes']);
-            add_action('wp_ajax_update_citation_fields', [$this, 'yiplcifo_ajax_update_citation_fields']);
+            add_action('wp_ajax_updateCitationEditField', [$this, 'yiplcifo_updateCitationEditField']);
             add_action('save_post', [$this, 'yiplcifo_save_post']);
         }
 
@@ -46,7 +46,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
                 );
                 wp_localize_script('yipl-citation-editor-script', 'yiplcifoAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
-                    'action_yipl_citation_fields' => 'update_citation_fields',
+                    'action_name' => 'updateCitationEditField',
                     'nonce'    => wp_create_nonce('citation_fields_row'),
                     'allow_citation' => $allow_citation,
                 ]);
@@ -137,7 +137,7 @@ if (! class_exists('YIPLCIFO_Editor_Fields')) {
         /**
          * Example ajax 
          */
-        function yiplcifo_ajax_update_citation_fields() {
+        function yiplcifo_updateCitationEditField() {
 
             // Verify _nonce
             if (!isset($_POST['_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_nonce'])), 'citation_fields_row')) {

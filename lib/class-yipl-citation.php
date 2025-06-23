@@ -1,6 +1,6 @@
 <?php
 
-namespace yiplcifo;
+namespace yiplcitation;
 
 // Exit if accessed directly.
 if (!defined('ABSPATH')) {
@@ -21,10 +21,10 @@ if (! class_exists('YIPL_CITATION')) {
             new YIPLCIFO_Data();
             new YIPLCIFO_Admin_Settings();
             new YIPLCIFO_Editor_Fields();
-            add_action('init', [$this, 'yipl_citation_register_scripts']);
+            add_action('init', [$this, 'yiplcifo_register_scripts']);
         }
 
-        function yipl_citation_register_scripts() {
+        function yiplcifo_register_scripts() {
             wp_register_style(
                 "yipl-citation-style",
                 YIPLCIFO_PLUGIN_URL . 'assets/css/yipl-citation-style.css',
