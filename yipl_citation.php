@@ -4,7 +4,7 @@
  * Plugin Name: YIPL Citation Footnotes
  * Plugin URI: 
  * Description: YIPL Citation Footnotes plugin purpose to add, manage and display citation for page/post/CPT using a user-friendly editor interface.
- * Tags: YIPL, Citation, Footnotes, Citation Plugin, reference, academic, editor, custom fields
+ * Tags: YIPLCIFO, Citation Plugin, academic, editor, custom fields
  * Contributors: santoshtmp7, younginnovations
  * Requires at least: 6.8
  * Requires PHP: 8.0
