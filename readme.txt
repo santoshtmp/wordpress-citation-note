@@ -1,7 +1,7 @@
-=== YIPL Citation Footnotes ===
+=== Citation Note ===
 
 Contributors: santoshtmp7, younginnovations
-Tags: YIPLCIFO, Citation Plugin, academic, editor, custom fields
+Tags: CITENOTE, Citation Plugin, academic, editor, custom fields
 Requires at least: 6.8
 Requires PHP: 8.0
 Tested up to: 6.8
@@ -13,7 +13,7 @@ This plugin add and manage citation fields for WordPress page/posts and CPT usin
 
 == Description ==
 
-**YIPL Citation Footnotes** WordPress plugin is developed to help content creators manage and display academic citations or references directly from the post/page editor.
+**Citation Note** WordPress plugin is developed to help content creators manage and display academic citations or references directly from the post/page editor.
 
 This plugin adds a custom meta box with dynamic citation fields that allow users to:
 - Add multiple citation entries
@@ -24,9 +24,9 @@ This plugin adds a custom meta box with dynamic citation fields that allow users
 Ideal for blogs, research publications, or any content that benefits from structured citation management.
 
 == Installation and Usage ==
-1. Upload the plugin folder to `/wp-content/plugins/yipl-citation/` or install via the Plugins menu.
+1. Upload the plugin folder to `/wp-content/plugins/citation-note/` or install via the Plugins menu.
 2. Activate the plugin through the **Plugins** menu in WordPress.
-3. After activation, go to the plugin settings screen at `/wp-admin/options-general.php?page=yipl-citation-settings`.
+3. After activation, go to the plugin settings screen at `/wp-admin/options-general.php?page=citenote`.
    - Select the post type(s) to apply citations to.
    - Set the citation footnote title (this will be displayed on the frontend).
 4. Go to the edit screen of any selected post type.
@@ -35,7 +35,7 @@ Ideal for blogs, research publications, or any content that benefits from struct
 7. Fill in your citation data (citation number and description).
 8. In the content editor, insert the placeholder (e.g., `citation_1`) where the citation reference should appear.
 9. Save or update the post.
-10. Use the shortcode `[yipl_citation_list]` or template function `do_shortcode('[yipl_citation_list]')` to render the citation list on the frontend.
+10. Use the shortcode `[citenote_display_list]` or template function `do_shortcode('[citenote_display_list]')` to render the citation list on the frontend.
 
 
 == Screenshots ==
@@ -59,7 +59,7 @@ Yes, it loads only on post editor screens and integrates seamlessly with the blo
 
 == Changelog ==
 = 1.0.0 =
-* Initial release of YIPL Citation.
+* Initial release of Citation Note.
 * Added support for dynamic citation fields and placeholder rendering.
 * Included shortcode for citation list output.
 * Admin settings to select post types and footnote title.

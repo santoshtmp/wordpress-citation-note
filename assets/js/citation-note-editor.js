@@ -1,7 +1,7 @@
 /**
  * https://developer.wordpress.org/block-editor/how-to-guides/format-api/
  */
-if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
+if (typeof citenoteAjax === "undefined" || citenoteAjax.allow_citation) {
   (function (wp) {
     const { registerFormatType, toggleFormat } = wp.richText;
     const { BlockControls } = wp.blockEditor || wp.editor;
@@ -9,14 +9,14 @@ if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
     const { ToolbarGroup, ToolbarButton } = wp.components;
     const { createElement, Fragment } = wp.element;
 
-    const YiplCitationButton = ({ isActive, onChange, value }) => {
+    const CitationNoteButton = ({ isActive, onChange, value }) => {
       // return createElement(
       //     RichTextToolbarButton,
       //     {
       //         icon: 'editor-ul',
-      //         title: 'YIPL Citation',
+      //         title: 'citenote Citation',
       //         onClick: () => {
-      //             onChange(toggleFormat(value, { type: 'yipl/citation', })
+      //             onChange(toggleFormat(value, { type: 'citenote/citation', })
       //             );
       //         },
       //         isActive: isActive,
@@ -33,12 +33,12 @@ if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
             null,
             createElement(ToolbarButton, {
               icon: "format-quote", //'editor-ol' 'format-quote'
-              label: "Citation",
-              title: "YIPL Citation",
+              label: "Citation Note",
+              title: "Citation Note",
               onClick: () => {
                 onChange(
                   toggleFormat(value, {
-                    type: "yipl/citation",
+                    type: "citenote/placeholder",
                   })
                 );
               },
@@ -49,11 +49,11 @@ if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
       );
     };
 
-    registerFormatType("yipl/citation", {
-      title: "YIPL Citation",
-      tagName: "yipl_citation_placeholder",
+    registerFormatType("citenote/placeholder", {
+      title: "Citation Note",
+      tagName: "citenote_placeholder",
       className: null,
-      edit: YiplCitationButton,
+      edit: CitationNoteButton,
     });
   })(window.wp);
 }
@@ -64,24 +64,24 @@ if (typeof yiplcifoAjax === "undefined" || yiplcifoAjax.allow_citation) {
 jQuery(document).ready(function ($) {
   // Initialize TinyMCE for existing textareas
   // add new fields when clicking the add button
-  $("#yipl-citation-add-repeater-group").on("click", function (e) {
+  $("#citation-note-add-repeater-group").on("click", function (e) {
     e.preventDefault();
     const $button = $(this);
     $button.prop("disabled", true); // Prevent rapid multiple clicks
 
     let ajax = $.ajax({
-      url: yiplcifoAjax.ajax_url,
+      url: citenoteAjax.ajax_url,
       type: "POST",
       data: {
-        action: yiplcifoAjax.action_name,
-        _nonce: yiplcifoAjax.nonce,
-        row_number: $("#yipl-citation-repeater-table tbody tr").length + 1,
+        action: citenoteAjax.action_name,
+        _nonce: citenoteAjax.nonce,
+        row_number: $("#citation-note-repeater-table tbody tr").length + 1,
       },
     });
 
     ajax.done(function (response) {
       let row = $(response);
-      $("#yipl-citation-repeater-table tbody").append(row);
+      $("#citation-note-repeater-table tbody").append(row);
 
       // Reinitialize TinyMCE if the row contains an editor
       row.find("textarea").each(function () {
@@ -102,7 +102,7 @@ jQuery(document).ready(function ($) {
 
   // Initialize TinyMCE for existing textareas
   // This will initialize TinyMCE for all textareas in the table
-  $("#yipl-citation-repeater-table tbody tr").each(function () {
+  $("#citation-note-repeater-table tbody tr").each(function () {
     $(this)
       .find("textarea")
       .each(function () {
@@ -115,7 +115,7 @@ jQuery(document).ready(function ($) {
 
   // Remove group button
   // This will remove the group from the table
-  $(document).on("click", ".yipl-citation-remove-group", function () {
+  $(document).on("click", ".citation-note-remove-group", function () {
     $(this).prop("disabled", true);
     if (confirm("Are you sure you want to remove this citation?")) {
       $(this).closest("tr").remove();
@@ -137,7 +137,7 @@ jQuery(document).ready(function ($) {
   // generate a unique placeholder for each input
   $(document).on(
     "blur",
-    "#yipl-citation-repeater-table .input-row_number",
+    "#citation-note-repeater-table .input-row_number",
     function () {
       var $input = $(this);
       var index = $input.data("index");
@@ -167,7 +167,7 @@ jQuery(document).ready(function ($) {
   );
 
   // Toggle collapse/expand
-  $("#yipl-citation-repeater-table").on(
+  $("#citation-note-repeater-table").on(
     "click",
     ".toggle-yi-citation-row",
     function () {
@@ -185,18 +185,18 @@ jQuery(document).ready(function ($) {
   );
 
   // Collapse all rows
-  $("#yipl-collapse-all").click(function () {
-    $("#yipl-citation-repeater-table tbody tr .citation-expandable").each(
+  $("#citenote-collapse-all").click(function () {
+    $("#citation-note-repeater-table tbody tr .citation-expandable").each(
       function () {
         $(this).hide(); // Hide all expandable content
       }
     );
-    $("#yipl-citation-repeater-table tbody tr .citation-collapseable").each(
+    $("#citation-note-repeater-table tbody tr .citation-collapseable").each(
       function () {
         $(this).show(); // Hide all expandable content
       }
     );
-    $("#yipl-citation-repeater-table tbody tr .toggle-yi-citation-row").each(
+    $("#citation-note-repeater-table tbody tr .toggle-yi-citation-row").each(
       function () {
         $(this).text("Expand");
       }
@@ -204,18 +204,18 @@ jQuery(document).ready(function ($) {
   });
 
   // Expand all rows
-  $("#yipl-expand-all").click(function () {
-    $("#yipl-citation-repeater-table tbody tr .citation-expandable").each(
+  $("#citenote-expand-all").click(function () {
+    $("#citation-note-repeater-table tbody tr .citation-expandable").each(
       function () {
         $(this).show(); // Show all expandable content
       }
     );
-    $("#yipl-citation-repeater-table tbody tr .citation-collapseable").each(
+    $("#citation-note-repeater-table tbody tr .citation-collapseable").each(
       function () {
         $(this).hide(); // Hide all expandable content
       }
     );
-    $("#yipl-citation-repeater-table tbody tr .toggle-yi-citation-row").each(
+    $("#citation-note-repeater-table tbody tr .toggle-yi-citation-row").each(
       function () {
         $(this).text("Collapse");
       }
@@ -223,7 +223,7 @@ jQuery(document).ready(function ($) {
   });
 
   // Re-arrange rows
-  $("#yipl-citation-repeater-table tbody").sortable({
+  $("#citation-note-repeater-table tbody").sortable({
     handle: ".row-drag-handler",
     axis: "y",
     // update: function (event, ui) {

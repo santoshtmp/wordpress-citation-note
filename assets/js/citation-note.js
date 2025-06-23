@@ -1,9 +1,9 @@
 // jQuery(document).ready(function ($) {});
 document.addEventListener("DOMContentLoaded", () => {
-  var yiplCitationsWrapper = document.querySelector('.yipl-citations-wrapper');
-  if (yiplCitationsWrapper) {
+  var citenoteWrapper = document.querySelector('.citation-note-wrapper');
+  if (citenoteWrapper) {
     const popup = document.createElement("div");
-    popup.className = "yipl-citation-popup";
+    popup.className = "citation-note-popup";
     document.body.appendChild(popup);
     let currentRef = null;
     let hideTimeout;
@@ -44,14 +44,14 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.classList.add("hide");
       }, 250);
     }
-    const references = document.querySelectorAll("sup.yiplcifo-reference");
+    const references = document.querySelectorAll("sup.citenote-reference");
     references.forEach((ref) => {
       const href = ref.querySelector("a")?.getAttribute("href");
       const citationId = href?.replace("#", "");
       const citationEl = citationId && document.getElementById(citationId);
       if (!citationEl) return;
       const citationContent = citationEl.querySelector(
-        ".yipl-citation-description"
+        ".citation-note-description"
       )?.innerHTML;
       if (!citationContent) return;
       ref.addEventListener("mouseenter", () => {
@@ -69,10 +69,10 @@ document.addEventListener("DOMContentLoaded", () => {
       hidePopupDelayed();
     });
   } else {
-    const references = document.querySelectorAll("sup.yiplcifo-reference");
+    const references = document.querySelectorAll("sup.citenote-reference");
     references.forEach((ref) => {
       ref.remove();
     });
-    console.log('yipl citation footnoes list output is not set. please add shortcode [yipl_citation_footnotes] at the end of the page content.')
+    console.log('citation footnoes list output is not set. please add shortcode [citenote_display_list] at the end of the page content.')
   }
 });
