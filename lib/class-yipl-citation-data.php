@@ -126,8 +126,8 @@ if (!class_exists('YIPLCIFO_Data')) {
          * yipl_citaion_sup_num_content
          */
         public static function yiplcifo_sup_number($post_id, $number_count) {
-            return '<sup id="yipl-citation-ref-' . esc_attr($post_id . '-' . $number_count) . '" class="yiplcifo-reference reference-number" aria-label="Citation ' . esc_attr($post_id . '-' . $number_count) . '">' .
-                '<a href="#yipl-citation-note-' . esc_attr($post_id . '-' . $number_count) . '">' .
+            return '<sup id="yiplcifo-ref-' . esc_attr($post_id . '-' . $number_count) . '" class="yiplcifo-reference reference-number" aria-label="Citation ' . esc_attr($post_id . '-' . $number_count) . '">' .
+                '<a href="#yiplcifo-note-' . esc_attr($post_id . '-' . $number_count) . '">' .
                 '<span class="cite-bracket">[</span>' .
                 esc_html($number_count) .
                 '<span class="cite-bracket">]</span>' .
@@ -166,7 +166,7 @@ if (!class_exists('YIPLCIFO_Data')) {
                         $description = '';
                     }
                     $description = trim($description);
-                    $output .= '<div id="yipl-citation-note-' . esc_attr($post_id . '-' . $row_number) . '"><div class="single-yipl-note-wrap"><span class="row-number">' . $row_number . '.</span><a class="yiplcifo-uplink" href="#yipl-citation-ref-' . esc_attr($post_id . '-' . $row_number) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></div>';
+                    $output .= '<div id="yiplcifo-note-' . esc_attr($post_id . '-' . $row_number) . '"><div class="single-yipl-note-wrap"><span class="row-number">' . $row_number . '.</span><a class="yiplcifo-uplink" href="#yiplcifo-ref-' . esc_attr($post_id . '-' . $row_number) . '">^</a><div class="yipl-citation-description">' . $description . '</div></div></div>';
                 }
                 $output .= '</div>';
                 $output .= '</div>';
