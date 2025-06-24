@@ -23,7 +23,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
             add_action('enqueue_block_editor_assets', [$this, 'citenote_enqueue_block_editor_assets']);
             add_filter('wp_kses_allowed_html', [$this, 'citenote_wp_kses_allowed_html'], 10, 2);
             add_action('add_meta_boxes', [$this, 'citenote_add_meta_boxes']);
-            add_action('wp_ajax_updateCitationEditField', [$this, 'citenote_updateCitationEditField']);
+            add_action('wp_ajax_citenote_updateCitationEditField', [$this, 'citenote_updateCitationEditField']);
             add_action('save_post', [$this, 'citenote_save_post']);
         }
 
@@ -46,7 +46,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
                 );
                 wp_localize_script('citation-note-editor-script', 'citenoteAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
-                    'action_name' => 'updateCitationEditField',
+                    'action_name' => 'citenote_updateCitationEditField',
                     'nonce'    => wp_create_nonce('citation_fields_row'),
                     'allow_citation' => $allow_citation,
                 ]);
