@@ -9,34 +9,35 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin add and manage citation fields for WordPress page/posts and CPT using a user-friendly editor interface.
-
 == Description ==
 
-**Citation Note** WordPress plugin is developed to help content creators manage and display academic citations or references directly from the post/page editor.
+This plugin easily add, manage, and display citations, references, and footnotes in posts, pages, or custom post types using a user-friendly editor interface.
+
+**Citation Note** WordPress plugin is developed to help content creators manage and display content citations or references directly from the post/page editor.
 
 This plugin adds a custom meta box with dynamic citation fields that allow users to:
-- Add multiple citation entries
-- Remove or reorder citations
-- Store data securely using WordPress meta
-- Output citations in the frontend or within blocks
+- Add multiple citation entries.
+- Remove or reorder citations.
+- Output citations in the frontend or within blocks.
 
 Ideal for blogs, research publications, or any content that benefits from structured citation management.
 
-== Installation and Usage ==
+== Installation ==
 1. Upload the plugin folder to `/wp-content/plugins/citation-note/` or install via the Plugins menu.
 2. Activate the plugin through the **Plugins** menu in WordPress.
-3. After activation, go to the plugin settings screen at `/wp-admin/options-general.php?page=citenote`.
-   - Select the post type(s) to apply citations to.
+3. After activate the plugin, go to the plugin settings screen at `/wp-admin/options-general.php?page=citenote`.
+   - Select the post type(s) to apply citations.
    - Set the citation footnote title (this will be displayed on the frontend).
-4. Go to the edit screen of any selected post type.
-5. Scroll down to the **Citation Footnotes** meta box.
-6. Click **Add Citation** to insert new fields.
-7. Fill in your citation data (citation number and description).
-8. In the content editor, insert the placeholder (e.g., `citation_1`) where the citation reference should appear.
-9. Save or update the post.
-10. Use the shortcode `[citenote_display_list]` or template function `do_shortcode('[citenote_display_list]')` to render the citation list on the frontend.
 
+== How to use ==
+1. After activate the plugin and select the post type to apply citations.
+2. Go to the edit screen of any selected post type.
+3. Scroll down to the **Citation List** meta box.
+4. Click **Add Citation** to insert new fields.
+5. Fill in your citation data (citation number and description).
+6. In the content editor, insert the placeholder (e.g., `citation_1`) where the citation reference should appear.
+7. Save or update the post.
+8. Use the shortcode `[citenote_display_list]` or template function `do_shortcode('[citenote_display_list]')` to render the citation list on the frontend.
 
 == Screenshots ==
 1. Plugin settings screen.
