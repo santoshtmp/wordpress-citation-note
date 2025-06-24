@@ -4,7 +4,7 @@
  * Plugin Name: Citation Note
  * Plugin URI: 
  * Description: Easily add, manage, and display citations, references, and footnotes in posts, pages, or custom post types using a user-friendly editor interface.
- * Tags: Citation Note, reference, footnotes, content note.
+ * Tags: CITENOTE, Citation, reference, footnotes, citation note
  * Contributors: santoshtmp7, younginnovations
  * Requires at least: 6.8
  * Requires PHP: 8.0

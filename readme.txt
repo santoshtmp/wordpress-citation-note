@@ -1,7 +1,7 @@
 === Citation Note ===
 
 Contributors: santoshtmp7, younginnovations
-Tags: CITENOTE, Citation Plugin, academic, editor, custom fields
+Tags: CITENOTE, Citation, reference, footnotes, citation note
 Requires at least: 6.8
 Requires PHP: 8.0
 Tested up to: 6.8
@@ -9,11 +9,13 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
+Easily add, manage, and display citations, references, and footnotes in posts, pages, or custom post types using a user-friendly editor interface.
+
 == Description ==
 
-This plugin easily add, manage, and display citations, references, and footnotes in posts, pages, or custom post types using a user-friendly editor interface.
+**Citation Note** plugin easily add, manage, and display citations, references, and footnotes in posts, pages, or custom post types using a user-friendly editor interface.
 
-**Citation Note** WordPress plugin is developed to help content creators manage and display content citations or references directly from the post/page editor.
+This is developed to help content creators manage and display content citations or references directly from the post/page editor.
 
 This plugin adds a custom meta box with dynamic citation fields that allow users to:
 - Add multiple citation entries.
