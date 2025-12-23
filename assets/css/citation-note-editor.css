@@ -1,10 +1,13 @@
-citenote_placeholder {
+citenote_placeholder,
+citenoteplaceholder {
     background-color: #fff4a3;
     padding: 0 2px;
     border-radius: 2px;
     font-style: italic;
 }
-.editor-styles-wrapper citenote_placeholder {
+
+.editor-styles-wrapper citenote_placeholder,
+.editor-styles-wrapper citenoteplaceholder {
     background-color: #fff4a3;
     padding: 0 2px;
     border-radius: 2px;

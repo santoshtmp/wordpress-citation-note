@@ -1,6 +1,7 @@
 /* citation footnotes */
 
-citenote_placeholder {
+citenote_placeholder,
+citenoteplaceholder {
   display: none;
 }
 
@@ -30,7 +31,7 @@ citenote_placeholder {
 sup.citenote-reference a {
   color: inherit;
   text-decoration: inherit;
-  transition: all .4s ease;
+  transition: all 0.4s ease;
 }
 
 .citation-note-popup {
@@ -43,7 +44,7 @@ sup.citenote-reference a {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 12px;
   border-radius: 8px;
-  z-index: 10000;
+  z-index: 49;
   font-size: 0.875rem;
   display: none;
   transition: opacity 0.2s ease;

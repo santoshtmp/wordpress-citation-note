@@ -4,8 +4,8 @@ Contributors: santoshtmp7, younginnovations
 Tags: CITENOTE, Citation, reference, footnotes, citation note
 Requires at least: 6.8
 Requires PHP: 8.0
-Tested up to: 6.8
-Stable tag: 1.0.0
+Tested up to: 6.9
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,9 @@ All citations are saved as post meta data under a structured array key.
 Yes, it loads only on post editor screens and integrates seamlessly with the block editor.
 
 == Changelog ==
+= 1.1.0 =
+* Compatible to 6.9
+* Fix citenoteplaceholder tag 
 = 1.0.0 =
 * Initial release of Citation Note.
 * Added support for dynamic citation fields and placeholder rendering.

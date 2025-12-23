@@ -1,6 +1,6 @@
 // jQuery(document).ready(function ($) {});
 document.addEventListener("DOMContentLoaded", () => {
-  var citenoteWrapper = document.querySelector('.citation-note-wrapper');
+  var citenoteWrapper = document.querySelector(".citation-note-wrapper");
   if (citenoteWrapper) {
     const popup = document.createElement("div");
     popup.className = "citation-note-popup";
@@ -25,10 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         left = window.innerWidth - popupWidth - 16; // 16px padding
       }
       // Prevent bottom overflow
-      const bottomEdge = top + popupHeight;
-      if (bottomEdge > window.scrollY + window.innerHeight) {
-        top = window.scrollY + rect.top - popupHeight - 6; // show above the reference
-      }
+      // const bottomEdge = top + popupHeight;
+      // if (bottomEdge > window.scrollY + window.innerHeight) {
+      //   top = window.scrollY + rect.top - popupHeight - 6; // show above the reference
+      // }
       popup.style.top = top + "px";
       popup.style.left = left + "px";
 
@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const refCenter = window.scrollX + rect.left + rect.width / 2;
       const arrowLeft = refCenter - left;
       popup.style.setProperty("--arrow-left", `${arrowLeft}px`);
-
     }
     function hidePopupDelayed() {
       hideTimeout = setTimeout(() => {
@@ -73,6 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
     references.forEach((ref) => {
       ref.remove();
     });
-    console.log('citation footnoes list output is not set. please add shortcode [citenote_display_list] at the end of the page content.')
+    console.log(
+      "citation footnoes list output is not set. please add shortcode [citenote_display_list] at the end of the page content."
+    );
   }
 });

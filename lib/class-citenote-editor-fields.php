@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * Citation Note – Editor & Meta Fields
+ * Reference:
+ * wp_ajax_action https://developer.wordpress.org/reference/hooks/wp_ajax_action/
+ * add_meta_boxes https://developer.wordpress.org/reference/hooks/add_meta_boxes/
+ * save_post https://developer.wordpress.org/reference/hooks/save_post/
+ * wp_kses_post() https://developer.wordpress.org/reference/functions/wp_kses_post/
+ * wp_kses_allowed_html https://developer.wordpress.org/reference/hooks/wp_kses_allowed_html/
+ * content_save_pre https://developer.wordpress.org/reference/hooks/field_no_prefix_save_pre/
+ * rest_post_dispatch https://developer.wordpress.org/reference/hooks/rest_post_dispatch/
+ * wp_editor() https://developer.wordpress.org/reference/functions/wp_editor/
+ * 
+ */
+
 namespace citenote;
 
 // Exit if accessed directly.
@@ -19,16 +33,35 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
          * construction
          */
         function __construct() {
-            // 
+            // Gutenberg assets
             add_action('enqueue_block_editor_assets', [$this, 'citenote_enqueue_block_editor_assets']);
-            add_filter('wp_kses_allowed_html', [$this, 'citenote_wp_kses_allowed_html'], 10, 2);
+            // Meta box
             add_action('add_meta_boxes', [$this, 'citenote_add_meta_boxes']);
+            // AJAX
             add_action('wp_ajax_citenote_updateCitationEditField', [$this, 'citenote_updateCitationEditField']);
+            // Save meta
             add_action('save_post', [$this, 'citenote_save_post']);
+            // KSES fallback (classic + safety)
+            add_filter('wp_kses_allowed_html', [$this, 'citenote_wp_kses_allowed_html'], 99, 2);
+            // Normalize BEFORE save (all editors)
+            add_action('content_save_pre', [$this, 'content_change_citenoteplaceholder_tag']);
+            // Normalize when loading into classic editor
+            add_filter('content_edit_pre', [$this, 'content_change_citenoteplaceholder_tag']);
+            // Normalize when loading into Gutenberg editor
+            add_filter('rest_post_dispatch', [$this, 'content_rest_post_change_citenoteplaceholder_tag'], 10, 3);
         }
 
+
+
         /**
-         * 
+         * Enqueue assets for citation support.
+         *
+         * Loads JavaScript and CSS only for allowed post types.
+         * Also localizes configuration and security data for AJAX usage.
+         *
+         * Hooked to: enqueue_block_editor_assets
+         *
+         * @return void
          */
         public function citenote_enqueue_block_editor_assets() {
             $allow_citation = false;
@@ -39,10 +72,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
                     CITENOTE_PLUGIN_URL . 'assets/js/citation-note-editor.js',
                     ['wp-rich-text', 'wp-editor', 'wp-block-editor', 'wp-element', 'wp-components', 'jquery', 'jquery-ui-sortable'],
                     filemtime(CITENOTE_PLUGIN_DIR . 'assets/js/citation-note-editor.js'),
-                    array(
-                        'in_footer' => true,
-                        'strategy' => 'defer',
-                    )
+                    true
                 );
                 wp_localize_script('citation-note-editor-script', 'citenoteAjax', [
                     'ajax_url' => admin_url('admin-ajax.php'),
@@ -61,18 +91,79 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
         }
 
         /**
-         * 
+         * Normalize legacy citation tags when loading post into Gutenberg editor.
+         *
+         * Runs during REST API preload for block editor.
+         *
+         * @param WP_REST_Response $response
+         * @param WP_REST_Server  $server
+         * @param WP_REST_Request $request
+         *
+         * @return WP_REST_Response
+         */
+        public function content_rest_post_change_citenoteplaceholder_tag($response, $server, $request) {
+
+            // Only when loading post into editor
+            if ($request->get_param('context') !== 'edit') {
+                return $response;
+            }
+
+            // data is in content
+            $data = $response->get_data();
+            if (is_array($data) && isset($data['content']['raw'])) {
+                $data['content']['raw'] = preg_replace(
+                    '/<citenote_placeholder>(.*?)<\/citenote_placeholder>/s',
+                    '<citenoteplaceholder>$1</citenoteplaceholder>',
+                    $data['content']['raw']
+                );
+            }
+
+            $response->set_data($data);
+            return $response;
+        }
+
+        /**
+         * Normalize legacy citation tags before saving post content.
+         *
+         * @param string $content
+         * @return string
+         */
+        public function content_change_citenoteplaceholder_tag($content) {
+            return preg_replace(
+                '/<citenote_placeholder>(.*?)<\/citenote_placeholder>/s',
+                '<citenoteplaceholder>$1</citenoteplaceholder>',
+                $content
+            );
+        }
+
+        /**
+         * Allow citation tags
+         *
+         * NOTE:
+         * Gutenberg may still strip invalid tags before KSES runs.
+         *
+         * @param array  $allowed
+         * @param string $context
+         * @return array
          */
         public function citenote_wp_kses_allowed_html($allowed, $context) {
-            if (is_array($allowed)) {
-                $allowed['citenote_placeholder'] = array(); // No attributes allowed
+            if (!is_array($allowed)) {
+                return $allowed;
             }
+
+            $allowed['citenote_placeholder'] = array();
+            $allowed['citenoteplaceholder'] = array();
             return $allowed;
         }
 
         /**
-         * Add Custom meata box in the post type
+         *
+         * Register the Citation List meta box for supported post types.
+         *
+         * Hooked to: add_meta_boxes 
          * https://developer.wordpress.org/reference/hooks/add_meta_boxes/
+         *
+         * @return void
          */
         public function citenote_add_meta_boxes() {
             if (CITENOTE_Data::$citenote_allow_post_type) {
@@ -87,7 +178,14 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
         }
 
         /**
-         * add_citenote_meta_box
+         * Render the Citation List meta box UI.
+         *
+         * Displays a sortable, repeatable list of citation fields
+         * with TinyMCE editors for descriptions.
+         *
+         * @param \WP_Post $post Current post object.
+         *
+         * @return void
          */
         function citenote_add_citenote_meta_box($post) {
             $fields_data = get_post_meta($post->ID, 'citenote_list', true);
@@ -135,7 +233,14 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
         }
 
         /**
-         * Example ajax 
+         * AJAX callback to render a new citation field row.
+         *
+         * Verifies nonce for security and outputs HTML for
+         * a new repeater row used in the citation meta box.
+         *
+         * Hooked to: wp_ajax_citenote_updateCitationEditField
+         *
+         * @return void Outputs HTML and exits.
          */
         function citenote_updateCitationEditField() {
 
@@ -152,7 +257,16 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
             wp_die();
         }
 
-        //
+        /**
+         * Output a single citation repeater row.
+         *
+         * Used for both initial meta box rendering and
+         * AJAX-generated rows.
+         *
+         * @param array $field Citation field data.
+         *
+         * @return void Outputs HTML table row.
+         */
         public function citenote_get_field_row($field) {
             $index = (isset($field['index'])) ? $field['index'] : time();
             $index = ($index) ? $index : time();
@@ -193,7 +307,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
                                 'textarea_rows' => 3,
                                 'media_buttons' => false,
                                 'teeny' => false,
-                                'quicktags' => true,
+                                'quicktags' => false,
                             ]
                         );
                         ?>
@@ -205,7 +319,6 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
                                 ? esc_html(wp_strip_all_tags($field['description']))
                                 : '<em>.....</em>'; ?>
                         </p>
-
                     </div>
                 </td>
                 <td class="citation-note-action-field" style="max-width: 6rem;">
@@ -216,11 +329,20 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
 <?php
         }
 
-
         /**
-         * Save post 
+         * Save citation list meta data when the post is saved.
+         *
+         * - Verifies nonce
+         * - Skips autosaves and revisions
+         * - Sanitizes citation descriptions using wp_kses_post()
+         * - Stores structured citation data in post meta
+         *
+         * Hooked to: save_post 
          * https://developer.wordpress.org/reference/hooks/save_post/
-         * 
+         *
+         * @param int $post_id Post ID being saved.
+         *
+         * @return void
          */
         public function citenote_save_post($post_id) {
 
@@ -256,7 +378,7 @@ if (! class_exists('CITENOTE_Editor_Fields')) {
         }
 
         /**
-         * ==== END ====
+         * End of CITENOTE_Editor_Fields class.
          */
     }
 }

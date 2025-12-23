@@ -88,13 +88,14 @@ if (!class_exists('CITENOTE_Data')) {
                     $citenote_post_citaion_list = [];
                 }
 
-                $pattern = '/<citenote_placeholder>(.*?)<\/citenote_placeholder>/';
+                // $pattern = '/<citenote_placeholder>(.*?)<\/citenote_placeholder>/'; // it has 1 group
+                $pattern = '/<(citenote(?:_placeholder|placeholder))>(.*?)<\/\1>/s'; // it has 2 group
                 // Replace with preg_replace_callback
                 $content = preg_replace_callback(
                     $pattern,
                     function ($matches) use (&$citenote_post_citaion_list, $citenote_list, $post_id) {
                         // 
-                        $citenote_placeholder = trim($matches[1]);
+                        $citenote_placeholder = trim($matches[2]);
                         if (!$citenote_placeholder) {
                             return ''; // If placeholder is empty, return empty string
                         }
