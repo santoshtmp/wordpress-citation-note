@@ -69,11 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   } else {
     const references = document.querySelectorAll("sup.citenote-reference");
-    references.forEach((ref) => {
-      ref.remove();
-    });
-    console.log(
-      "citation footnoes list output is not set. please add shortcode [citenote_display_list] at the end of the page content."
-    );
+    if (references.length) {
+      references.forEach((ref) => {
+        ref.remove();
+      });
+      console.log(
+        "citation footnoes list output is not set. please add shortcode [citenote_display_list] at the end of the page content."
+      );
+    }
   }
 });
