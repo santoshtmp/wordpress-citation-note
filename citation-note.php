@@ -9,7 +9,7 @@
  * Requires at least: 6.8
  * Requires PHP: 8.0
  * Tested up to: 6.9
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: santoshtmp7
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -47,13 +47,13 @@ if (! class_exists('CITENOTE')) {
             new \citenote\CITENOTE_Admin_Settings();
             new \citenote\CITENOTE_Editor_Fields();
 
-            add_action('init', [$this, 'citenote_register_scripts']);
+            add_action('wp_enqueue_scripts', [$this, 'enqueue_citenote_scripts']);
         }
 
         /**
          * 
          */
-        function citenote_register_scripts() {
+        function enqueue_citenote_scripts() {
             wp_register_style(
                 "citation-note-style",
                 CITENOTE_PLUGIN_URL . 'assets/css/citation-note-style.css',
